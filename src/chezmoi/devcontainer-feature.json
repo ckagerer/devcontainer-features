@@ -1,0 +1,17 @@
+{
+    "name": "chezmoi",
+    "id": "chezmoi",
+    "version": "1.0.0",
+    "description": "Install chezmoi",
+    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
+    "options": {
+        "dotfiles_repo": {
+            "type": "string",
+            "default": "twpayne/dotfiles",
+            "description": "The dotfiles repository to clone."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}
