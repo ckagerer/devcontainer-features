@@ -10,6 +10,27 @@ if [ -z "${DOTFILES_REPO}" ]; then
     exit 1
 fi
 
+# update apt cache
+apt update
+
+# check if curl is installed
+if ! command -v curl &> /dev/null; then
+    apt install -y curl
+fi
+
+# check if sudo is installed
+if ! command -v sudo &> /dev/null; then
+    apt install -y sudo
+fi
+
+# check if git is installed
+if ! command -v git &> /dev/null; then
+    apt install -y git
+fi
+
+# cleanup apt cache
+rm -rf /var/lib/apt/lists/*
+
 # download and run the installer
 INSTALLER_PATH="/tmp/chezmoi-installer.sh"
 curl --fail --silent --location --show-error --retry 10 --output "$INSTALLER_PATH" https://git.io/chezmoi
