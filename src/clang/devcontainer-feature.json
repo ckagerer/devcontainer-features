@@ -1,0 +1,17 @@
+{
+    "name": "clang",
+    "id": "clang",
+    "version": "1.0.0",
+    "description": "Install Clang/LLVM",
+    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/clang",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "16",
+            "description": "Version to install."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}
