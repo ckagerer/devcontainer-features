@@ -16,6 +16,7 @@ jobs:
         features:
           - chezmoi
           - clang
+          - persist-shell-history
         baseImage:
           - debian:latest
           - ubuntu:latest
@@ -37,6 +38,7 @@ jobs:
         features:
           - chezmoi
           - clang
+          - persist-shell-history
     steps:
       - uses: actions/checkout@v3
 

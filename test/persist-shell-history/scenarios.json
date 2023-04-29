@@ -1,0 +1,15 @@
+{
+    "test": {
+        "image": "mcr.microsoft.com/devcontainers/base:focal",
+        "features": {
+            "ghcr.io/devcontainers/features/common-utils:1": {
+                "installZsh": true,
+                "installOhMyZsh": true,
+                "upgradePackages": false,
+                "username": "octocat"
+            },
+            "persist-shell-history": {}
+        },
+        "remoteUser": "octocat"
+    }
+}
