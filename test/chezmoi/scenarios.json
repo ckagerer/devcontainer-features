@@ -1,6 +1,6 @@
 {
     "test": {
-        "image": "mcr.microsoft.com/devcontainers/base:focal",
+        "image": "ubuntu:jammy",
         "features": {
             "ghcr.io/devcontainers/features/common-utils:1": {
                 "installZsh": false,
