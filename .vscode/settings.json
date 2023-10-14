@@ -1,0 +1,9 @@
+{
+  "workbench.colorCustomizations": {
+    "separators.enums.borderColor": "#53a788",
+    "separators.functions.borderColor": "#808080",
+    "activityBar.background": "#492320",
+    "titleBar.activeBackground": "#66302C",
+    "titleBar.activeForeground": "#FCF9F9"
+  }
+}
