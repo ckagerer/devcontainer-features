@@ -1,13 +1,13 @@
 {
     "name": "persist-shell-history",
     "id": "persist-shell-history",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Retain the history of bash and zsh even during rebuilds.",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-shell-history",
     "options": {},
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils",
-        "chezmoi"
+        "ghcr.io/ckagerer/devcontainer-features/chezmoi"
     ],
     "mounts": [
         {
