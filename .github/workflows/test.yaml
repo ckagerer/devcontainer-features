@@ -19,7 +19,7 @@ jobs:
           - persist-shell-history
         baseImage:
           - debian:bullseye
-          - debina:bookworm
+          - debian:bookworm
           - debian:latest
           - ubuntu:focal
           - ubuntu:jammy
