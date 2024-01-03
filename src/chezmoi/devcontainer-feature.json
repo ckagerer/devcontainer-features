@@ -1,7 +1,7 @@
 {
     "name": "chezmoi",
     "id": "chezmoi",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Install chezmoi",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
     "options": {
@@ -9,6 +9,21 @@
             "type": "string",
             "default": "twpayne/dotfiles",
             "description": "The dotfiles repository to clone."
+        },
+        "atuin_user": {
+            "type": "string",
+            "default": "",
+            "description": "The user to use for Atuin. Leave empty if you don't want to use Atuin."
+        },
+        "atuin_password": {
+            "type": "string",
+            "default": "",
+            "description": "The token to use for Atuin. Leave empty if you don't want to use Atuin."
+        },
+        "atuin_key": {
+            "type": "string",
+            "default": "",
+            "description": "The key to use for Atuin. Leave empty if you don't want to use Atuin."
         }
     },
     "installsAfter": [

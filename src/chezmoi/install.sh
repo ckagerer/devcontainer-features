@@ -14,17 +14,17 @@ fi
 apt update
 
 # check if curl is installed
-if ! command -v curl &> /dev/null; then
+if ! command -v curl &>/dev/null; then
     apt install -y curl
 fi
 
 # check if sudo is installed
-if ! command -v sudo &> /dev/null; then
+if ! command -v sudo &>/dev/null; then
     apt install -y sudo
 fi
 
 # check if git is installed
-if ! command -v git &> /dev/null; then
+if ! command -v git &>/dev/null; then
     apt install -y git
 fi
 
@@ -45,5 +45,11 @@ CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 CHEZMOI_ARGS=("init" "--apply")
 CMD="chezmoi ${CHEZMOI_ARGS[*]} ${DOTFILES_REPO}"
 sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAINERS=1 ${CMD}"
+
+# Atuin login and sync
+if [ -n "${ATUIN_USER}" ] && [ -n "${ATUIN_PASSWORD}" ] && [ -n "${ATUIN_KEY}" ]; then
+    sudo --user "${CHEZMOI_USER}" atuin login --username "${ATUIN_USER}" --password "${ATUIN_PASSWORD}" --key "${ATUIN_KEY}"
+    sudo --user "${CHEZMOI_USER}" atuin sync
+fi
 
 echo "Done"
