@@ -23,7 +23,9 @@ jobs:
           - debian:latest
           - ubuntu:focal
           - ubuntu:jammy
+          - ubuntu:noble
           - ubuntu:latest
+          - ubuntu:rolling
           - mcr.microsoft.com/devcontainers/base:debian
           - mcr.microsoft.com/devcontainers/base:ubuntu
     steps:
