@@ -50,6 +50,16 @@ sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAIN
 if [ -n "${ATUIN_USER}" ] && [ -n "${ATUIN_PASSWORD}" ] && [ -n "${ATUIN_KEY}" ]; then
     sudo --user "${CHEZMOI_USER}" atuin login --username "${ATUIN_USER}" --password "${ATUIN_PASSWORD}" --key "${ATUIN_KEY}"
     sudo --user "${CHEZMOI_USER}" atuin sync
+
+    # Import history if configured
+    if [ -n "${ATUIN_IMPORT_HISTORY}" ]; then
+        if command -v bash &>/dev/null; then
+            sudo --user "${CHEZMOI_USER}" atuin import bash
+        fi
+        if command -v zsh &>/dev/null; then
+            sudo --user "${CHEZMOI_USER}" atuin import zsh
+        fi
+    fi
 fi
 
 echo "Done"
