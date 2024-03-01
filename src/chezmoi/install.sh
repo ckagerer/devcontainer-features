@@ -54,10 +54,10 @@ if [ -n "${ATUIN_USER}" ] && [ -n "${ATUIN_PASSWORD}" ] && [ -n "${ATUIN_KEY}" ]
     # Import history if configured
     if [ -n "${ATUIN_IMPORT_HISTORY}" ]; then
         if command -v bash &>/dev/null; then
-            sudo --user "${CHEZMOI_USER}" atuin import bash
+            sudo --user "${CHEZMOI_USER}" atuin import bash || true
         fi
         if command -v zsh &>/dev/null; then
-            sudo --user "${CHEZMOI_USER}" atuin import zsh
+            sudo --user "${CHEZMOI_USER}" atuin import zsh || true
         fi
     fi
 fi
