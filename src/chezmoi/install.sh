@@ -47,19 +47,34 @@ CMD="chezmoi ${CHEZMOI_ARGS[*]} ${DOTFILES_REPO}"
 sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAINERS=1 ${CMD}"
 
 # Atuin login and sync
-if [ -n "${ATUIN_USER}" ] && [ -n "${ATUIN_PASSWORD}" ] && [ -n "${ATUIN_KEY}" ]; then
-    sudo --user "${CHEZMOI_USER}" atuin login --username "${ATUIN_USER}" --password "${ATUIN_PASSWORD}" --key "${ATUIN_KEY}"
-    sudo --user "${CHEZMOI_USER}" atuin sync
+# --- Generate a 'pull-git-lfs-artifacts.sh' script to be executed by the 'postCreateCommand' lifecycle hook
+INIT_ATUIN_SCRIPT_PATH="/usr/local/share/chezmoi-atuin-init.sh"
 
-    # Import history if configured
-    if [ -n "${ATUIN_IMPORT_HISTORY}" ]; then
-        if command -v bash &>/dev/null; then
-            sudo --user "${CHEZMOI_USER}" atuin import bash || true
+tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null \
+    <<EOF
+#!/usr/bin/env bash
+set -ex
+
+ATUIN_USER="${ATUIN_USER}"
+ATUIN_PASSWORD="${ATUIN_PASSWORD}"
+ATUIN_KEY="${ATUIN_KEY}"
+
+# exit if required environment variables are not set
+if [ -n "\${ATUIN_USER}" ] && [ -n "\${ATUIN_PASSWORD}" ] && [ -n "\${ATUIN_KEY}" ]; then
+    # If /.persist-shell-history exists, we assume that the user wants to persist also the atuin history
+    if [ -d "/.persist-shell-history" ]; then
+        if [ -d ~/.local/share/atuin ]; then
+            mv ~/.local/share/atuin ~/.local/share/atuin.bak
         fi
-        if command -v zsh &>/dev/null; then
-            sudo --user "${CHEZMOI_USER}" atuin import zsh || true
-        fi
+        mkdir -p /.persist-shell-history/atuin
+        ln --symbolic --force /.persist-shell-history/atuin ~/.local/share
     fi
+
+    atuin login --username "\${ATUIN_USER}" --password "\${ATUIN_PASSWORD}" --key "\${ATUIN_KEY}"
+    atuin sync
 fi
+EOF
+
+chmod 755 "$INIT_ATUIN_SCRIPT_PATH"
 
 echo "Done"
