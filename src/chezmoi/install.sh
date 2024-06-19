@@ -70,7 +70,7 @@ if [ -n "\${ATUIN_USER}" ] && [ -n "\${ATUIN_PASSWORD}" ] && [ -n "\${ATUIN_KEY}
         ln --symbolic --force /.persist-shell-history/atuin ~/.local/share
     fi
 
-    atuin login --username "\${ATUIN_USER}" --password "\${ATUIN_PASSWORD}" --key "\${ATUIN_KEY}"
+    atuin login --username "\${ATUIN_USER}" --password "\${ATUIN_PASSWORD}" --key "\${ATUIN_KEY}" || true
     atuin sync
 fi
 EOF
