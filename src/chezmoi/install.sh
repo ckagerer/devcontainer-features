@@ -43,6 +43,9 @@ CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 
 # run chezmoi
 CHEZMOI_ARGS=("init" "--apply")
+if [ -n "${CHEZMOI_BRANCH}" ]; then
+    CHEZMOI_ARGS+=("--branch" "${CHEZMOI_BRANCH}")
+fi
 CMD="chezmoi ${CHEZMOI_ARGS[*]} ${DOTFILES_REPO}"
 sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAINERS=1 ${CMD}"
 
