@@ -4,6 +4,7 @@
     "config:recommended",
     ":rebaseStalePrs",
     ":semanticCommits",
-    ":semanticCommitType(build)"
+    ":semanticCommitType(build)",
+    "helpers:pinGitHubActionDigestsToSemver"
   ]
 }
