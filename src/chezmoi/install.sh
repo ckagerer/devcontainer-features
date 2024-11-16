@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 set -ex
 
@@ -10,26 +10,66 @@ if [ -z "${DOTFILES_REPO}" ]; then
     exit 1
 fi
 
-# update apt cache
-apt update
+# Function to update and install packages on Debian-based systems
+install_debian_packages() {
+    apt update
 
-# check if curl is installed
-if ! command -v curl &>/dev/null; then
-    apt install -y curl
+    # check if curl is installed
+    if ! command -v curl >/dev/null 2>&1; then
+        apt install -y curl
+    fi
+
+    # check if sudo is installed
+    if ! command -v sudo >/dev/null 2>&1; then
+        apt install -y sudo
+    fi
+
+    # check if git is installed
+    if ! command -v git >/dev/null 2>&1; then
+        apt install -y git
+    fi
+
+    # check if bash is installed
+    if ! command -v bash >/dev/null 2>&1; then
+        apt install -y bash
+    fi
+
+    # cleanup apt cache
+    rm -rf /var/lib/apt/lists/*
+}
+
+# Function to update and install packages on Alpine Linux
+install_alpine_packages() {
+    # check if curl is installed
+    if ! command -v curl >/dev/null 2>&1; then
+        apk add --no-cache curl
+    fi
+
+    # check if sudo is installed
+    if ! command -v sudo >/dev/null 2>&1; then
+        apk add --no-cache sudo
+    fi
+
+    # check if git is installed
+    if ! command -v git >/dev/null 2>&1; then
+        apk add --no-cache git
+    fi
+
+    # check if bash is installed
+    if ! command -v bash >/dev/null 2>&1; then
+        apk add --no-cache bash
+    fi
+}
+
+# Detect the distribution and install packages accordingly
+if [ -f /etc/debian_version ]; then
+    install_debian_packages
+elif [ -f /etc/alpine-release ]; then
+    install_alpine_packages
+else
+    echo "Unsupported distribution"
+    exit 1
 fi
-
-# check if sudo is installed
-if ! command -v sudo &>/dev/null; then
-    apt install -y sudo
-fi
-
-# check if git is installed
-if ! command -v git &>/dev/null; then
-    apt install -y git
-fi
-
-# cleanup apt cache
-rm -rf /var/lib/apt/lists/*
 
 # download and run the installer
 INSTALLER_PATH="/tmp/chezmoi-installer.sh"
@@ -42,19 +82,18 @@ rm "$INSTALLER_PATH"
 CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 
 # run chezmoi
-CHEZMOI_ARGS=("init" "--apply")
+CHEZMOI_ARGS="init --apply"
 if [ -n "${CHEZMOI_BRANCH}" ]; then
-    CHEZMOI_ARGS+=("--branch" "${CHEZMOI_BRANCH}")
+    CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch ${CHEZMOI_BRANCH}"
 fi
-CMD="chezmoi ${CHEZMOI_ARGS[*]} ${DOTFILES_REPO}"
+CMD="chezmoi ${CHEZMOI_ARGS} ${DOTFILES_REPO}"
 sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAINERS=1 ${CMD}"
 
 # Atuin login and sync
 # --- Generate a 'pull-git-lfs-artifacts.sh' script to be executed by the 'postCreateCommand' lifecycle hook
 INIT_ATUIN_SCRIPT_PATH="/usr/local/share/chezmoi-atuin-init.sh"
 
-tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null \
-    <<EOF
+tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null <<EOF
 #!/usr/bin/env bash
 set -ex
 
