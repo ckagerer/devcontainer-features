@@ -82,7 +82,7 @@ rm "$INSTALLER_PATH"
 CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 
 # run chezmoi
-CHEZMOI_ARGS="init --apply"
+CHEZMOI_ARGS="init --apply --exclude=encrypted"
 if [ -n "${CHEZMOI_BRANCH}" ]; then
     CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch ${CHEZMOI_BRANCH}"
 fi
