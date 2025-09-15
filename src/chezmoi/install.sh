@@ -105,7 +105,7 @@ tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null <<EOF
 # (C) Copyright 2025 Christian Kagerer
 # Purpose: Initialize Atuin login and sync for chezmoi devcontainer feature
 
-KEEP_GOING="\${KEEP_GOING:-false}"
+KEEP_GOING="${KEEP_GOING:-false}"
 
 if [[ "\${KEEP_GOING}" == "true" ]]; then
   set +o errexit +o nounset +o pipefail
@@ -131,6 +131,10 @@ if [ -n "\${ATUIN_USER}" ] && [ -n "\${ATUIN_PASSWORD}" ] && [ -n "\${ATUIN_KEY}
 
     atuin login --username "\${ATUIN_USER}" --password "\${ATUIN_PASSWORD}" --key "\${ATUIN_KEY}" || true
     atuin sync
+fi
+
+if [[ "\${KEEP_GOING}" == "true" ]]; then
+  exit 0
 fi
 EOF
 
