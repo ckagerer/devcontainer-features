@@ -1,7 +1,7 @@
 {
     "name": "chezmoi",
     "id": "chezmoi",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "description": "Install chezmoi",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
     "options": {
@@ -29,6 +29,11 @@
             "type": "string",
             "default": "",
             "description": "The key to use for Atuin. Leave empty if you don't want to use Atuin."
+        },
+        "keep_going": {
+            "type": "boolean",
+            "default": false,
+            "description": "Ignore errors during setup and continue execution."
         }
     },
     "postCreateCommand": "/usr/local/share/chezmoi-atuin-init.sh",

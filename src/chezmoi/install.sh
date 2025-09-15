@@ -1,6 +1,13 @@
 #!/usr/bin/env sh
+# (C) Copyright 2025 Christian Kagerer
+# Purpose: Install chezmoi and initialize dotfiles from DOTFILES_REPO
 
-set -ex
+if [ "${KEEP_GOING:-false}" = "true" ]; then
+  set +e
+else
+  set -e
+fi
+set -x
 
 CHEZMOI_USER="${CHEZMOI_USER:-$_REMOTE_USER}"
 
@@ -95,7 +102,17 @@ INIT_ATUIN_SCRIPT_PATH="/usr/local/share/chezmoi-atuin-init.sh"
 
 tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null <<EOF
 #!/usr/bin/env bash
-set -ex
+# (C) Copyright 2025 Christian Kagerer
+# Purpose: Initialize Atuin login and sync for chezmoi devcontainer feature
+
+KEEP_GOING="\${KEEP_GOING:-false}"
+
+if [[ "\${KEEP_GOING}" == "true" ]]; then
+  set +o errexit +o nounset +o pipefail
+else
+  set -o errexit -o nounset -o pipefail
+fi
+set -x
 
 ATUIN_USER="${ATUIN_USER}"
 ATUIN_PASSWORD="${ATUIN_PASSWORD}"
