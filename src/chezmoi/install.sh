@@ -13,69 +13,69 @@ CHEZMOI_USER="${CHEZMOI_USER:-$_REMOTE_USER}"
 
 # exit if DOTFILES_REPO is not set
 if [ -z "${DOTFILES_REPO}" ]; then
-    echo "DOTFILES_REPO is not set"
-    exit 1
+  echo "DOTFILES_REPO is not set"
+  exit 1
 fi
 
 # Function to update and install packages on Debian-based systems
 install_debian_packages() {
-    apt update
+  apt update
 
-    # check if curl is installed
-    if ! command -v curl >/dev/null 2>&1; then
-        apt install -y curl
-    fi
+  # check if curl is installed
+  if ! command -v curl >/dev/null 2>&1; then
+    apt install -y curl
+  fi
 
-    # check if sudo is installed
-    if ! command -v sudo >/dev/null 2>&1; then
-        apt install -y sudo
-    fi
+  # check if sudo is installed
+  if ! command -v sudo >/dev/null 2>&1; then
+    apt install -y sudo
+  fi
 
-    # check if git is installed
-    if ! command -v git >/dev/null 2>&1; then
-        apt install -y git
-    fi
+  # check if git is installed
+  if ! command -v git >/dev/null 2>&1; then
+    apt install -y git
+  fi
 
-    # check if bash is installed
-    if ! command -v bash >/dev/null 2>&1; then
-        apt install -y bash
-    fi
+  # check if bash is installed
+  if ! command -v bash >/dev/null 2>&1; then
+    apt install -y bash
+  fi
 
-    # cleanup apt cache
-    rm -rf /var/lib/apt/lists/*
+  # cleanup apt cache
+  rm -rf /var/lib/apt/lists/*
 }
 
 # Function to update and install packages on Alpine Linux
 install_alpine_packages() {
-    # check if curl is installed
-    if ! command -v curl >/dev/null 2>&1; then
-        apk add --no-cache curl
-    fi
+  # check if curl is installed
+  if ! command -v curl >/dev/null 2>&1; then
+    apk add --no-cache curl
+  fi
 
-    # check if sudo is installed
-    if ! command -v sudo >/dev/null 2>&1; then
-        apk add --no-cache sudo
-    fi
+  # check if sudo is installed
+  if ! command -v sudo >/dev/null 2>&1; then
+    apk add --no-cache sudo
+  fi
 
-    # check if git is installed
-    if ! command -v git >/dev/null 2>&1; then
-        apk add --no-cache git
-    fi
+  # check if git is installed
+  if ! command -v git >/dev/null 2>&1; then
+    apk add --no-cache git
+  fi
 
-    # check if bash is installed
-    if ! command -v bash >/dev/null 2>&1; then
-        apk add --no-cache bash
-    fi
+  # check if bash is installed
+  if ! command -v bash >/dev/null 2>&1; then
+    apk add --no-cache bash
+  fi
 }
 
 # Detect the distribution and install packages accordingly
 if [ -f /etc/debian_version ]; then
-    install_debian_packages
+  install_debian_packages
 elif [ -f /etc/alpine-release ]; then
-    install_alpine_packages
+  install_alpine_packages
 else
-    echo "Unsupported distribution"
-    exit 1
+  echo "Unsupported distribution"
+  exit 1
 fi
 
 # download and run the installer
@@ -91,7 +91,7 @@ CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 # run chezmoi
 CHEZMOI_ARGS="init --apply --exclude=encrypted"
 if [ -n "${CHEZMOI_BRANCH}" ]; then
-    CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch ${CHEZMOI_BRANCH}"
+  CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch ${CHEZMOI_BRANCH}"
 fi
 CMD="chezmoi ${CHEZMOI_ARGS} ${DOTFILES_REPO}"
 sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAINERS=1 ${CMD}"
