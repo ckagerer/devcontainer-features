@@ -1,7 +1,7 @@
 {
   "name": "persist-ccache-cache",
   "id": "persist-ccache-cache",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Persist ccache compiler cache across container rebuilds.",
   "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-ccache-cache",
   "options": {
