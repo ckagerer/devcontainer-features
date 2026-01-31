@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "name": "default",
+      "description": "Test persist-pre-commit-cache with default settings"
+    }
+  ]
+}

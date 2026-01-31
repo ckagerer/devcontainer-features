@@ -3,7 +3,7 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "postCreateCommand": "npm install -g @devcontainers/cli",
+  "postCreateCommand": "npm install --global --prefix=~/.local @devcontainers/cli",
   "hostRequirements": {
     "cpus": 4
   },

@@ -1,0 +1,27 @@
+{
+  "name": "persist-pre-commit-cache",
+  "id": "persist-pre-commit-cache",
+  "version": "1.0.0",
+  "description": "Persist pre-commit and prek cache across container rebuilds.",
+  "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-pre-commit-cache",
+  "options": {
+    "keep_going": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ignore errors during setup and continue execution."
+    }
+  },
+  "mounts": [
+    {
+      "source": "devcontainer-persist-precommit-cache",
+      "target": "/.persist-precommit-cache",
+      "type": "volume"
+    },
+    {
+      "source": "devcontainer-persist-prek-cache",
+      "target": "/.persist-prek-cache",
+      "type": "volume"
+    }
+  ],
+  "postCreateCommand": "/usr/local/share/persist-precommit-init.sh"
+}
