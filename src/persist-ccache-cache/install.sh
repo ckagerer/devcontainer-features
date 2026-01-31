@@ -18,7 +18,7 @@ chmod 777 /.persist-ccache
 INIT_SCRIPT_PATH="/usr/local/share/persist-ccache-init.sh"
 
 tee "$INIT_SCRIPT_PATH" >/dev/null <<'EOF'
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Initialize ccache symlinks and environment configuration
 # This script runs in user context (postCreateCommand)

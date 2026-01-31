@@ -18,7 +18,7 @@ chmod 777 /.persist-precommit-cache /.persist-prek-cache
 INIT_SCRIPT_PATH="/usr/local/share/persist-precommit-init.sh"
 
 tee "$INIT_SCRIPT_PATH" >/dev/null <<'EOF'
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Initialize pre-commit cache symlinks in user home directory
 # This script runs in user context (postCreateCommand)
