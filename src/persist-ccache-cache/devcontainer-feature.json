@@ -1,11 +1,11 @@
 {
   "name": "persist-ccache-cache",
   "id": "persist-ccache-cache",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Persist ccache compiler cache across container rebuilds.",
   "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-ccache-cache",
   "options": {
-    "cache_size": {
+    "ccache_maxsize": {
       "type": "string",
       "default": "5G",
       "description": "Maximum ccache size (e.g., 5G, 10GB, 50G). Default: 5G"
