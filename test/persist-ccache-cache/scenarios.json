@@ -1,0 +1,15 @@
+{
+  "scenarios": [
+    {
+      "name": "default",
+      "description": "Test persist-ccache with default settings (5G cache)"
+    },
+    {
+      "name": "custom_size",
+      "description": "Test persist-ccache with custom cache size",
+      "options": {
+        "cache_size": "10G"
+      }
+    }
+  ]
+}

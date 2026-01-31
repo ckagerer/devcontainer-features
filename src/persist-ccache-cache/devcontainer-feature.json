@@ -1,0 +1,27 @@
+{
+  "name": "persist-ccache-cache",
+  "id": "persist-ccache-cache",
+  "version": "1.0.0",
+  "description": "Persist ccache compiler cache across container rebuilds.",
+  "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-ccache-cache",
+  "options": {
+    "cache_size": {
+      "type": "string",
+      "default": "5G",
+      "description": "Maximum ccache size (e.g., 5G, 10GB, 50G). Default: 5G"
+    },
+    "keep_going": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ignore errors during setup and continue execution."
+    }
+  },
+  "mounts": [
+    {
+      "source": "devcontainer-persist-ccache",
+      "target": "/.persist-ccache",
+      "type": "volume"
+    }
+  ],
+  "postCreateCommand": "/usr/local/share/persist-ccache-init.sh"
+}
