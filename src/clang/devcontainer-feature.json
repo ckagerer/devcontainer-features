@@ -1,7 +1,7 @@
 {
     "name": "clang",
     "id": "clang",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Install Clang/LLVM",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/clang",
     "options": {
