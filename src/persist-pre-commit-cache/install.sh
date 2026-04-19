@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
-
-# Initialize pre-commit cache volume directories
+# (C) Copyright 2026 Christian Kagerer
+# Purpose: Initialize pre-commit cache volume directories
 # This script runs as root during container build
 
 if [ "${KEEP_GOING:-false}" = "true" ]; then
@@ -12,7 +12,7 @@ set -x
 
 # Create cache directories with permissions for all users
 mkdir -p /.persist-precommit-cache /.persist-prek-cache
-chmod 777 /.persist-precommit-cache /.persist-prek-cache
+chmod 1777 /.persist-precommit-cache /.persist-prek-cache
 
 # Generate the postCreateCommand script that runs in user context
 INIT_SCRIPT_PATH="/usr/local/share/persist-precommit-init.sh"
