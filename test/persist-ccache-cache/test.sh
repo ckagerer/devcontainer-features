@@ -16,7 +16,7 @@ echo "Checking volume mount directory..."
 # Check permissions
 echo "Checking directory permissions..."
 perms=$(stat -c '%a' /.persist-ccache)
-[ "$perms" = "777" ] || {
+[ "$perms" = "1777" ] || {
   echo "Error: /.persist-ccache has wrong permissions: $perms"
   exit 1
 }

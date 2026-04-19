@@ -25,7 +25,6 @@ jobs:
           - debian:bullseye
           - debian:bookworm
           - debian:latest
-          - ubuntu:focal
           - ubuntu:jammy
           - ubuntu:noble
           - ubuntu:latest
@@ -33,6 +32,14 @@ jobs:
           - mcr.microsoft.com/devcontainers/base:alpine
           - mcr.microsoft.com/devcontainers/base:debian
           - mcr.microsoft.com/devcontainers/base:ubuntu
+        exclude:
+          # clang only supports Debian/Ubuntu
+          - features: clang
+            baseImage: alpine:3.20
+          - features: clang
+            baseImage: alpine:latest
+          - features: clang
+            baseImage: mcr.microsoft.com/devcontainers/base:alpine
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
