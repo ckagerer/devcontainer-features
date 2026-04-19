@@ -80,7 +80,7 @@ fi
 
 # download and run the installer
 INSTALLER_PATH="/tmp/chezmoi-installer.sh"
-curl --fail --silent --location --show-error --retry 10 --output "$INSTALLER_PATH" https://git.io/chezmoi
+curl --fail --silent --location --show-error --retry 10 --output "$INSTALLER_PATH" https://get.chezmoi.io
 chmod +x "$INSTALLER_PATH"
 BINDIR="/usr/local/bin" "$INSTALLER_PATH"
 rm "$INSTALLER_PATH"
@@ -91,10 +91,10 @@ CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 # run chezmoi
 CHEZMOI_ARGS="init --apply --exclude=encrypted"
 if [ -n "${CHEZMOI_BRANCH}" ]; then
-  CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch ${CHEZMOI_BRANCH}"
+  CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch '${CHEZMOI_BRANCH}'"
 fi
-CMD="chezmoi ${CHEZMOI_ARGS} ${DOTFILES_REPO}"
-sudo --user "${CHEZMOI_USER}" bash -c "cd ${CHEZMOI_USER_HOME} && REMOTE_CONTAINERS=1 ${CMD}"
+CMD="chezmoi ${CHEZMOI_ARGS} '${DOTFILES_REPO}'"
+sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && REMOTE_CONTAINERS=1 ${CMD}"
 
 # Atuin login and sync
 # --- Generate a 'pull-git-lfs-artifacts.sh' script to be executed by the 'postCreateCommand' lifecycle hook
