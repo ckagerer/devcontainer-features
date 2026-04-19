@@ -1,31 +1,27 @@
 #!/usr/bin/env bash
+# (C) Copyright 2026 Christian Kagerer
+# Purpose: Install Clang/LLVM toolchain and configure update-alternatives
 
 set -ex
 
+# This feature requires Debian/Ubuntu (apt-based)
+if [ ! -f /etc/debian_version ]; then
+  echo "Error: clang feature only supports Debian/Ubuntu-based distributions" >&2
+  exit 1
+fi
+
 CLANG_VERSION="${VERSION:-16}"
 CLANG_INSTALL_ALL=all
-CLANG_PRIORITY=${CLANG_VERSION}
+CLANG_PRIORITY="${CLANG_VERSION}"
 
-# List of packages to check and install
-packages=(lsb-release wget software-properties-common gpg)
-
-# update apt cache
+# Ensure required packages are installed
 apt update
-
-for package in "${packages[@]}"; do
-  # Check if the package is installed
-  if ! command -v "$package" >/dev/null 2>&1; then
-    echo "$package not found. Installing..."
-    DEBIAN_FRONTEND=noninteractive apt install --yes "$package"
-  fi
-done
-
-# cleanup apt cache
-rm -rf /var/lib/apt/lists/*
+DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
+  lsb-release curl software-properties-common gpg
 
 # download and run the installer
 INSTALLER_PATH="/tmp/llvm.sh"
-wget -q -O "$INSTALLER_PATH" https://apt.llvm.org/llvm.sh
+curl --fail --silent --location --show-error --retry 10 --output "$INSTALLER_PATH" https://apt.llvm.org/llvm.sh
 chmod +x "$INSTALLER_PATH"
 "$INSTALLER_PATH" "${CLANG_VERSION}" "${CLANG_INSTALL_ALL}"
 rm "$INSTALLER_PATH"
@@ -77,5 +73,8 @@ update-alternatives \
   --slave /usr/bin/clang-tidy clang-tidy "/usr/bin/clang-tidy-${CLANG_VERSION}" \
   --slave /usr/bin/lldb lldb "/usr/bin/lldb-${CLANG_VERSION}" \
   --slave /usr/bin/lldb-server lldb-server "/usr/bin/lldb-server-${CLANG_VERSION}"
+
+# cleanup apt cache
+rm -rf /var/lib/apt/lists/*
 
 echo "Done"
