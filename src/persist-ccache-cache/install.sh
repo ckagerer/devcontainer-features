@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
-
-# Initialize ccache volume directory and configuration
+# (C) Copyright 2026 Christian Kagerer
+# Purpose: Initialize ccache volume directory and configuration
 # This script runs as root during container build
 
 if [ "${KEEP_GOING:-false}" = "true" ]; then
@@ -12,12 +12,12 @@ set -x
 
 # Create cache directory with permissions for all users
 mkdir -p /.persist-ccache
-chmod 777 /.persist-ccache
+chmod 1777 /.persist-ccache
 
 # Generate the postCreateCommand script that runs in user context
 INIT_SCRIPT_PATH="/usr/local/share/persist-ccache-init.sh"
 
-tee "$INIT_SCRIPT_PATH" >/dev/null <<EOF
+tee "$INIT_SCRIPT_PATH" >/dev/null <<'EOF'
 #!/usr/bin/env sh
 
 # Initialize ccache symlinks and environment configuration
@@ -26,8 +26,8 @@ tee "$INIT_SCRIPT_PATH" >/dev/null <<EOF
 set -e
 set -x
 
-# Get CCACHE_MAXSIZE from environment, default to 5G
-CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-5G}"
+# CCACHE_MAXSIZE is set below by the installer (sed replacement)
+CCACHE_MAXSIZE="__CCACHE_MAXSIZE_PLACEHOLDER__"
 
 # Check if a path is a mount point
 is_mount_point() {
@@ -91,6 +91,9 @@ echo "ccache persistence initialization complete"
 echo "  Cache directory: ~/.cache/ccache (symlink to /.persist-ccache)"
 echo "  Max cache size: $CCACHE_MAXSIZE"
 EOF
+
+# Inject the configured CCACHE_MAXSIZE value into the generated script
+sed -i "s|__CCACHE_MAXSIZE_PLACEHOLDER__|${CCACHE_MAXSIZE:-5G}|g" "$INIT_SCRIPT_PATH"
 
 chmod 755 "$INIT_SCRIPT_PATH"
 
