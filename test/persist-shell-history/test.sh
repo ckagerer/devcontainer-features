@@ -49,15 +49,14 @@ fi
 if [ -f /etc/bash.bashrc ] && grep -q "HISTFILE.*persist-shell-history" /etc/bash.bashrc; then
   echo "✓ Bash history configuration found in /etc/bash.bashrc"
 
-  # Test bash HISTFILE variable
-  if command -v bash >/dev/null 2>&1; then
-    histfile=$(bash -c 'echo "$HISTFILE"')
-    if [ "$histfile" = "/.persist-shell-history/bash_history" ]; then
-      echo "✓ Bash HISTFILE correctly set to /.persist-shell-history/bash_history"
-    else
-      echo "✗ Bash HISTFILE not set correctly: $histfile"
-      exit 1
-    fi
+  # Verify the exact HISTFILE value in the config file.
+  # Note: bash -c is non-interactive and does not source /etc/bash.bashrc,
+  # so we grep the file directly instead of evaluating through bash.
+  if grep -q 'HISTFILE="/.persist-shell-history/bash_history"' /etc/bash.bashrc; then
+    echo "✓ Bash HISTFILE correctly set to /.persist-shell-history/bash_history"
+  else
+    echo "✗ Bash HISTFILE not set correctly in /etc/bash.bashrc"
+    exit 1
   fi
 fi
 
