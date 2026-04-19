@@ -23,24 +23,38 @@ This repository contains a set of Dev Container Features (reusable units) that i
 
 ```
 project-root/
-├── src/                        # Feature implementations
-│   ├── chezmoi/                # Feature: installs chezmoi dotfile manager
+├── src/                            # Feature implementations
+│   ├── chezmoi/                    # Feature: installs chezmoi dotfile manager
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
 │   │   └── README.md
-│   ├── clang/                  # Feature: installs clang/llvm toolchain
+│   ├── clang/                      # Feature: installs clang/llvm toolchain
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
 │   │   └── README.md
-│   └── persist-shell-history/  # Feature: persists shell history across containers
+│   ├── persist-ccache-cache/       # Feature: persists ccache across container rebuilds
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
+│   ├── persist-pre-commit-cache/   # Feature: persists pre-commit cache across rebuilds
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
+│   └── persist-shell-history/      # Feature: persists shell history across containers
 │       ├── devcontainer-feature.json
 │       ├── install.sh
 │       └── README.md
-├── test/                       # Feature tests and test scenarios
+├── test/                           # Feature tests and test scenarios
 │   ├── chezmoi/
 │   │   ├── scenarios.json
 │   │   └── test.sh
 │   ├── clang/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   ├── persist-ccache-cache/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   ├── persist-pre-commit-cache/
 │   │   ├── scenarios.json
 │   │   └── test.sh
 │   └── persist-shell-history/
