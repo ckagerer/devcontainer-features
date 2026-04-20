@@ -17,6 +17,10 @@ if [ -z "${DOTFILES_REPO}" ]; then
   exit 1
 fi
 
+escape_sed_replacement() {
+  printf '%s' "$1" | sed 's/[\\&|]/\\&/g'
+}
+
 # Function to update and install packages on Debian-based systems
 install_debian_packages() {
   apt update
@@ -100,44 +104,64 @@ sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && REMOTE_CONTA
 # --- Generate a 'pull-git-lfs-artifacts.sh' script to be executed by the 'postCreateCommand' lifecycle hook
 INIT_ATUIN_SCRIPT_PATH="/usr/local/share/chezmoi-atuin-init.sh"
 
-tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null <<EOF
+tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null <<'EOF'
 #!/usr/bin/env bash
 # (C) Copyright 2025 Christian Kagerer
 # Purpose: Initialize Atuin login and sync for chezmoi devcontainer feature
 
-KEEP_GOING="${KEEP_GOING:-false}"
+KEEP_GOING="__KEEP_GOING_PLACEHOLDER__"
 
-if [[ "\${KEEP_GOING}" == "true" ]]; then
+if [[ "${KEEP_GOING}" == "true" ]]; then
   set +o errexit +o nounset +o pipefail
 else
   set -o errexit -o nounset -o pipefail
 fi
 set -x
 
-ATUIN_USER="${ATUIN_USER}"
-ATUIN_PASSWORD="${ATUIN_PASSWORD}"
-ATUIN_KEY="${ATUIN_KEY}"
+ATUIN_USER="__ATUIN_USER_PLACEHOLDER__"
+ATUIN_PASSWORD="__ATUIN_PASSWORD_PLACEHOLDER__"
+ATUIN_KEY="__ATUIN_KEY_PLACEHOLDER__"
 
-# exit if required environment variables are not set
-if [ -n "\${ATUIN_USER}" ] && [ -n "\${ATUIN_PASSWORD}" ] && [ -n "\${ATUIN_KEY}" ]; then
-    # If /.persist-shell-history exists, we assume that the user wants to persist also the atuin history
-    if [ -d "/.persist-shell-history" ]; then
-        if [ -d ~/.local/share/atuin ]; then
-            mv ~/.local/share/atuin ~/.local/share/atuin.bak
-        fi
-        mkdir -p /.persist-shell-history/atuin
-        mkdir -p ~/.local/share
-        ln -s -f /.persist-shell-history/atuin ~/.local/share/atuin
-    fi
-
-    atuin login --username "\${ATUIN_USER}" --password "\${ATUIN_PASSWORD}" --key "\${ATUIN_KEY}" || true
-    atuin sync
+if [[ -z "${ATUIN_USER}" || -z "${ATUIN_PASSWORD}" || -z "${ATUIN_KEY}" ]]; then
+  echo "Atuin credentials not configured; skipping atuin initialization"
+  exit 0
 fi
 
-if [[ "\${KEEP_GOING}" == "true" ]]; then
+# If /.persist-shell-history exists, we assume that the user wants to persist also the atuin history.
+if [[ -d "/.persist-shell-history" ]]; then
+  if [[ -d "${HOME}/.local/share/atuin" && ! -L "${HOME}/.local/share/atuin" ]]; then
+    mv "${HOME}/.local/share/atuin" "${HOME}/.local/share/atuin.bak"
+  fi
+
+  mkdir -p "/.persist-shell-history/atuin"
+  mkdir -p "${HOME}/.local/share"
+  ln -sfn "/.persist-shell-history/atuin" "${HOME}/.local/share/atuin"
+fi
+
+if ! command -v atuin >/dev/null 2>&1; then
+  echo "Atuin credentials are configured, but atuin is not installed. Skipping login and sync." >&2
+  exit 0
+fi
+
+atuin login --username "${ATUIN_USER}" --password "${ATUIN_PASSWORD}" --key "${ATUIN_KEY}" || true
+atuin sync
+
+if [[ "${KEEP_GOING}" == "true" ]]; then
   exit 0
 fi
 EOF
+
+KEEP_GOING_ESCAPED="$(escape_sed_replacement "${KEEP_GOING:-false}")"
+ATUIN_USER_ESCAPED="$(escape_sed_replacement "${ATUIN_USER:-}")"
+ATUIN_PASSWORD_ESCAPED="$(escape_sed_replacement "${ATUIN_PASSWORD:-}")"
+ATUIN_KEY_ESCAPED="$(escape_sed_replacement "${ATUIN_KEY:-}")"
+
+sed -i \
+  -e "s|__KEEP_GOING_PLACEHOLDER__|${KEEP_GOING_ESCAPED}|g" \
+  -e "s|__ATUIN_USER_PLACEHOLDER__|${ATUIN_USER_ESCAPED}|g" \
+  -e "s|__ATUIN_PASSWORD_PLACEHOLDER__|${ATUIN_PASSWORD_ESCAPED}|g" \
+  -e "s|__ATUIN_KEY_PLACEHOLDER__|${ATUIN_KEY_ESCAPED}|g" \
+  "$INIT_ATUIN_SCRIPT_PATH"
 
 chmod 755 "$INIT_ATUIN_SCRIPT_PATH"
 

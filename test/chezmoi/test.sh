@@ -41,6 +41,9 @@ source dev-container-features-test-lib
 # The 'check' command comes from the dev-container-features-test-lib. Syntax is...
 # check <LABEL> <cmd> [args...]
 check "validate if chezmoi command is installed" chezmoi --version
+check "validate if chezmoi Atuin init script exists" test -x /usr/local/share/chezmoi-atuin-init.sh
+# shellcheck disable=SC2016
+check "validate if chezmoi has been initialized for the current user" sh -c 'source_path=$(chezmoi source-path) && [ -n "$source_path" ] && [ -d "$source_path" ]'
 
 # Report result
 # If any of the checks above exited with a non-zero exit code, the test will fail.

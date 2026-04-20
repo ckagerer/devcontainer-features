@@ -9,7 +9,10 @@
                 "username": "octocat"
             },
             "chezmoi": {
-                "dotfiles_repo": "twpayne/dotfiles"
+                "dotfiles_repo": "twpayne/dotfiles",
+                "atuin_user": "octocat",
+                "atuin_password": "dummy-token",
+                "atuin_key": "dummy key for feature testing"
             }
         },
         "remoteUser": "octocat"

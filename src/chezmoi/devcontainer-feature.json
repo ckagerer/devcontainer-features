@@ -1,7 +1,7 @@
 {
     "name": "chezmoi",
     "id": "chezmoi",
-    "version": "1.6.2",
+    "version": "1.6.3",
     "description": "Install chezmoi",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
     "options": {
