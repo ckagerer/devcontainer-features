@@ -1,6 +1,6 @@
 {
   "test": {
-    "image": "ubuntu:focal",
+    "image": "ubuntu:noble",
     "features": {
       "persist-pre-commit-cache": {}
     }

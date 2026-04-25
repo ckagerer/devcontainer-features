@@ -20,13 +20,13 @@ jobs:
           - persist-pre-commit-cache
           - persist-ccache-cache
         baseImage:
-          - alpine:3.20
+          - alpine:3.21
           - alpine:latest
-          - debian:bullseye
           - debian:bookworm
           - debian:latest
           - ubuntu:jammy
           - ubuntu:noble
+          - ubuntu:resolute
           - ubuntu:latest
           - ubuntu:rolling
           - mcr.microsoft.com/devcontainers/base:alpine
@@ -35,7 +35,7 @@ jobs:
         exclude:
           # clang only supports Debian/Ubuntu
           - features: clang
-            baseImage: alpine:3.20
+            baseImage: alpine:3.21
           - features: clang
             baseImage: alpine:latest
           - features: clang
