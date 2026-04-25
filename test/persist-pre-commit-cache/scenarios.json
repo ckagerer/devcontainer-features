@@ -1,8 +1,8 @@
 {
-  "scenarios": [
-    {
-      "name": "default",
-      "description": "Test persist-pre-commit-cache with default settings"
+  "test": {
+    "image": "ubuntu:focal",
+    "features": {
+      "persist-pre-commit-cache": {}
     }
-  ]
+  }
 }
