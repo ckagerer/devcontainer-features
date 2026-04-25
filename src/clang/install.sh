@@ -17,7 +17,10 @@ CLANG_PRIORITY="${CLANG_VERSION}"
 # Ensure required packages are installed
 apt update
 DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
-  lsb-release curl software-properties-common gpg
+  ca-certificates lsb-release curl gpg
+# Needed by llvm.sh for older LLVM versions; not available on all Debian distros
+DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
+  software-properties-common || true
 
 # download and run the installer
 INSTALLER_PATH="/tmp/llvm.sh"
