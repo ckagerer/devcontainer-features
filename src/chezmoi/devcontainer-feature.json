@@ -1,7 +1,7 @@
 {
     "name": "chezmoi",
     "id": "chezmoi",
-    "version": "1.6.3",
+    "version": "1.7.0",
     "description": "Install chezmoi",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
     "options": {
@@ -34,6 +34,11 @@
             "type": "boolean",
             "default": false,
             "description": "Ignore errors during setup and continue execution."
+        },
+        "env_vars": {
+            "type": "string",
+            "default": "",
+            "description": "Semicolon-separated KEY=VALUE pairs to export as environment variables (e.g. MY_VAR=hello;OTHER=world)."
         }
     },
     "postCreateCommand": "/usr/local/share/chezmoi-atuin-init.sh",

@@ -17,12 +17,25 @@ This feature does not install Atuin, Starship, or shell themes. Those tools must
 
 To persist Atuin history across rebuilds, combine this feature with [persist-shell-history](../persist-shell-history/).
 
+If `env_vars` is set, the key-value pairs are exported as environment variables in every shell session (bash and zsh) via the system-wide shell config files.
+
 ## Example Usage
 
 ```json
 "features": {
     "ghcr.io/ckagerer/devcontainer-features/chezmoi:1": {
         "dotfiles_repo": "twpayne/dotfiles"
+    }
+}
+```
+
+## Example With Environment Variables
+
+```json
+"features": {
+    "ghcr.io/ckagerer/devcontainer-features/chezmoi:1": {
+        "dotfiles_repo": "twpayne/dotfiles",
+        "env_vars": "MY_VAR=hello;OTHER_VAR=world"
     }
 }
 ```
