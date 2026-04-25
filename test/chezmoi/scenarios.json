@@ -10,7 +10,23 @@
             },
             "chezmoi": {
                 "dotfiles_repo": "twpayne/dotfiles",
-                "env_vars": "CHEZMOI_TEST_VAR=hello;CHEZMOI_OTHER_VAR=world"
+                "env_vars": "CHEZMOI_TEST_VAR=hello;CHEZMOI_OTHER_VAR=world;CHEZMOI_SPACE_VAR=hello world"
+            }
+        },
+        "remoteUser": "octocat"
+    },
+    "env_vars_zsh": {
+        "image": "ubuntu:jammy",
+        "features": {
+            "ghcr.io/devcontainers/features/common-utils:1": {
+                "installZsh": true,
+                "installOhMyZsh": false,
+                "upgradePackages": false,
+                "username": "octocat"
+            },
+            "chezmoi": {
+                "dotfiles_repo": "twpayne/dotfiles",
+                "env_vars": "CHEZMOI_TEST_VAR=hello;CHEZMOI_OTHER_VAR=world;CHEZMOI_SPACE_VAR=hello world"
             }
         },
         "remoteUser": "octocat"
