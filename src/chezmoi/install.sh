@@ -170,14 +170,14 @@ apply_env_vars() {
 
   if [ -f /etc/bash.bashrc ] && ! grep -q "# chezmoi-env-vars" /etc/bash.bashrc; then
     printf "\n# chezmoi-env-vars\n" >>/etc/bash.bashrc
-    printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair; do
+    printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair || [ -n "${pair}" ]; do
       [ -n "${pair}" ] && printf 'export %s\n' "${pair}" >>/etc/bash.bashrc
     done
   fi
 
   if [ -d /etc/zsh ] && ! grep -q "# chezmoi-env-vars" /etc/zsh/zshenv 2>/dev/null; then
     printf "\n# chezmoi-env-vars\n" >>/etc/zsh/zshenv
-    printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair; do
+    printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair || [ -n "${pair}" ]; do
       [ -n "${pair}" ] && printf 'export %s\n' "${pair}" >>/etc/zsh/zshenv
     done
   fi
