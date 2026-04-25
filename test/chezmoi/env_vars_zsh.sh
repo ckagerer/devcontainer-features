@@ -5,11 +5,11 @@ set -e
 source dev-container-features-test-lib
 
 # shellcheck disable=SC2016
-check "CHEZMOI_TEST_VAR exported in bash" bash -c 'source /etc/bash.bashrc && [ "${CHEZMOI_TEST_VAR}" = "hello" ]'
+check "CHEZMOI_TEST_VAR exported in zsh" zsh -c 'source /etc/zsh/zshenv && [ "${CHEZMOI_TEST_VAR}" = "hello" ]'
 # shellcheck disable=SC2016
-check "CHEZMOI_OTHER_VAR exported in bash" bash -c 'source /etc/bash.bashrc && [ "${CHEZMOI_OTHER_VAR}" = "world" ]'
+check "CHEZMOI_OTHER_VAR exported in zsh" zsh -c 'source /etc/zsh/zshenv && [ "${CHEZMOI_OTHER_VAR}" = "world" ]'
 # shellcheck disable=SC2016
-check "CHEZMOI_SPACE_VAR exported in bash" bash -c 'source /etc/bash.bashrc && [ "${CHEZMOI_SPACE_VAR}" = "hello world" ]'
+check "CHEZMOI_SPACE_VAR exported in zsh" zsh -c 'source /etc/zsh/zshenv && [ "${CHEZMOI_SPACE_VAR}" = "hello world" ]'
 
 # Verify chezmoi was successfully initialized while env vars were already available during init
 # shellcheck disable=SC2016

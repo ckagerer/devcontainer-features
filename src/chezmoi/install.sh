@@ -92,13 +92,31 @@ rm "$INSTALLER_PATH"
 # get home directory of user ${CHEZMOI_USER}
 CHEZMOI_USER_HOME="$(getent passwd "${CHEZMOI_USER}" | cut -d: -f6)"
 
+# Build a temporary env-export script so ENV_VARS are available during chezmoi init
+CHEZMOI_ENV_TMP=""
+CHEZMOI_ENV_SOURCE=""
+if [ -n "${ENV_VARS:-}" ]; then
+  CHEZMOI_ENV_TMP="$(mktemp)"
+  chmod 644 "${CHEZMOI_ENV_TMP}"
+  printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair || [ -n "${pair}" ]; do
+    if [ -n "${pair}" ]; then
+      key="${pair%%=*}"
+      value="${pair#*=}"
+      printf 'export %s="%s"\n' "${key}" "${value}" >>"${CHEZMOI_ENV_TMP}"
+    fi
+  done
+  CHEZMOI_ENV_SOURCE=". '${CHEZMOI_ENV_TMP}' && "
+fi
+
 # run chezmoi
 CHEZMOI_ARGS="init --apply --exclude=encrypted"
 if [ -n "${CHEZMOI_BRANCH}" ]; then
   CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch '${CHEZMOI_BRANCH}'"
 fi
 CMD="chezmoi ${CHEZMOI_ARGS} '${DOTFILES_REPO}'"
-sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && REMOTE_CONTAINERS=1 ${CMD}"
+sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}"
+
+[ -n "${CHEZMOI_ENV_TMP}" ] && rm -f "${CHEZMOI_ENV_TMP}"
 
 # Atuin login and sync
 # --- Generate a 'pull-git-lfs-artifacts.sh' script to be executed by the 'postCreateCommand' lifecycle hook
@@ -171,14 +189,22 @@ apply_env_vars() {
   if [ -f /etc/bash.bashrc ] && ! grep -q "# chezmoi-env-vars" /etc/bash.bashrc; then
     printf "\n# chezmoi-env-vars\n" >>/etc/bash.bashrc
     printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair || [ -n "${pair}" ]; do
-      [ -n "${pair}" ] && printf 'export %s\n' "${pair}" >>/etc/bash.bashrc
+      if [ -n "${pair}" ]; then
+        key="${pair%%=*}"
+        value="${pair#*=}"
+        printf 'export %s="%s"\n' "${key}" "${value}" >>/etc/bash.bashrc
+      fi
     done
   fi
 
   if [ -d /etc/zsh ] && ! grep -q "# chezmoi-env-vars" /etc/zsh/zshenv 2>/dev/null; then
     printf "\n# chezmoi-env-vars\n" >>/etc/zsh/zshenv
     printf '%s' "${ENV_VARS}" | tr ';' '\n' | while IFS= read -r pair || [ -n "${pair}" ]; do
-      [ -n "${pair}" ] && printf 'export %s\n' "${pair}" >>/etc/zsh/zshenv
+      if [ -n "${pair}" ]; then
+        key="${pair%%=*}"
+        value="${pair#*=}"
+        printf 'export %s="%s"\n' "${key}" "${value}" >>/etc/zsh/zshenv
+      fi
     done
   fi
 }
