@@ -114,6 +114,36 @@ if [ -n "${CHEZMOI_BRANCH}" ]; then
   CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch '${CHEZMOI_BRANCH}'"
 fi
 CMD="chezmoi ${CHEZMOI_ARGS} '${DOTFILES_REPO}'"
+
+if [ "${DEBUG:-false}" = "true" ]; then
+  CHEZMOI_DEBUG_LOG="/var/log/chezmoi-feature-debug.log"
+  printf '=== chezmoi feature debug log: %s ===\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >"${CHEZMOI_DEBUG_LOG}"
+  {
+    printf '\n-- Feature options --\n'
+    printf 'DOTFILES_REPO=%s\n' "${DOTFILES_REPO}"
+    printf 'CHEZMOI_BRANCH=%s\n' "${CHEZMOI_BRANCH:-}"
+    printf 'CHEZMOI_USER=%s\n' "${CHEZMOI_USER}"
+    printf 'CHEZMOI_USER_HOME=%s\n' "${CHEZMOI_USER_HOME}"
+    printf 'ENV_VARS=%s\n' "${ENV_VARS:-}"
+    printf 'KEEP_GOING=%s\n' "${KEEP_GOING:-false}"
+    printf '\n-- Resolved chezmoi command --\n'
+    printf '%s\n' "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}"
+  } >>"${CHEZMOI_DEBUG_LOG}"
+  if [ -n "${CHEZMOI_ENV_TMP}" ] && [ -f "${CHEZMOI_ENV_TMP}" ]; then
+    {
+      printf '\n-- Injected env file (%s) --\n' "${CHEZMOI_ENV_TMP}"
+      cat "${CHEZMOI_ENV_TMP}"
+    } >>"${CHEZMOI_DEBUG_LOG}"
+  fi
+  {
+    printf '\n-- Full environment (installer process) --\n'
+    env | sort
+    printf '\n=== end of debug log ===\n'
+  } >>"${CHEZMOI_DEBUG_LOG}"
+  chmod 640 "${CHEZMOI_DEBUG_LOG}"
+  printf 'chezmoi debug log written to %s\n' "${CHEZMOI_DEBUG_LOG}"
+fi
+
 sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}"
 
 [ -n "${CHEZMOI_ENV_TMP}" ] && rm -f "${CHEZMOI_ENV_TMP}"
