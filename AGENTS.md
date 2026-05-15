@@ -44,6 +44,10 @@ project-root/
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
 │   │   └── README.md
+│   ├── share-host-skillshare-config/ # Feature: bind-mounts host ~/.config/skillshare into container
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
 │   └── share-host-claude-config/   # Feature: bind-mounts host ~/.claude and symlinks safe subpaths
 │       ├── devcontainer-feature.json
 │       ├── install.sh
@@ -62,6 +66,9 @@ project-root/
 │   │   ├── scenarios.json
 │   │   └── test.sh
 │   ├── persist-shell-history/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   ├── share-host-skillshare-config/
 │   │   ├── scenarios.json
 │   │   └── test.sh
 │   └── share-host-claude-config/

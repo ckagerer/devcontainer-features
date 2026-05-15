@@ -1,0 +1,18 @@
+{
+    "id": "share-host-skillshare-config",
+    "version": "0.1.0",
+    "name": "Share host Skillshare config",
+    "description": "Bind-mounts the host ~/.config/skillshare into the devcontainer and symlinks it into $HOME/.config/skillshare so Skillshare skills, extras, and agents persist across rebuilds.",
+    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/share-host-skillshare-config",
+    "mounts": [
+        {
+            "source": "${localEnv:HOME}/.config/skillshare",
+            "target": "/.host-skillshare-config",
+            "type": "bind"
+        }
+    ],
+    "postCreateCommand": "/usr/local/share/share-host-skillshare-config-init.sh",
+    "installsAfter": [
+        "ghcr.io/ckagerer/devcontainer-features/chezmoi"
+    ]
+}
