@@ -40,7 +40,11 @@ project-root/
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
 │   │   └── README.md
-│   └── persist-shell-history/      # Feature: persists shell history across containers
+│   ├── persist-shell-history/      # Feature: persists shell history across containers
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
+│   └── share-host-claude-config/   # Feature: bind-mounts host ~/.claude and symlinks safe subpaths
 │       ├── devcontainer-feature.json
 │       ├── install.sh
 │       └── README.md
@@ -57,7 +61,10 @@ project-root/
 │   ├── persist-pre-commit-cache/
 │   │   ├── scenarios.json
 │   │   └── test.sh
-│   └── persist-shell-history/
+│   ├── persist-shell-history/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   └── share-host-claude-config/
 │       ├── scenarios.json
 │       └── test.sh
 ├── .devcontainer.json          # VS Code devcontainer config for local development

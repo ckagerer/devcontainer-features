@@ -1,0 +1,85 @@
+{
+    "id": "share-host-claude-config",
+    "version": "0.1.0",
+    "name": "Share host Claude Code config",
+    "description": "Bind-mounts the host ~/.claude into the devcontainer and selectively symlinks safe subpaths (agents, commands, skills, hooks, rules, plugins, ...) into $HOME/.claude so user config persists across rebuilds. MCP/settings.json excluded by default.",
+    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/share-host-claude-config",
+    "options": {
+        "link_claude_md": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink CLAUDE.md from host staging mount."
+        },
+        "link_agents": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink agents/ from host staging mount."
+        },
+        "link_commands": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink commands/ from host staging mount."
+        },
+        "link_skills": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink skills/ from host staging mount."
+        },
+        "link_hooks": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink hooks/ from host staging mount."
+        },
+        "link_rules": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink rules/ from host staging mount."
+        },
+        "link_plugins": {
+            "type": "boolean",
+            "default": true,
+            "description": "Symlink plugins/ from host staging mount. Assumes x86_64 Linux host and container; set false for cross-arch containers."
+        },
+        "link_sessions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Symlink sessions/ from host staging mount. Opt in for cross-container session analytics."
+        },
+        "link_projects": {
+            "type": "boolean",
+            "default": false,
+            "description": "Symlink projects/ from host staging mount. Opt in for token analytics (ccusage) or shared auto-memory (requires matching workspaceFolder)."
+        },
+        "link_tasks": {
+            "type": "boolean",
+            "default": false,
+            "description": "Symlink tasks/ from host staging mount."
+        },
+        "link_history": {
+            "type": "boolean",
+            "default": false,
+            "description": "Symlink history.jsonl from host staging mount."
+        },
+        "link_claude_json": {
+            "type": "boolean",
+            "default": false,
+            "description": "Symlink claude.json from host staging mount. Only if portable across environments."
+        },
+        "link_settings": {
+            "type": "boolean",
+            "default": false,
+            "description": "Symlink settings.json from host staging mount. Avoid if settings.json references host-only MCP server commands."
+        }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:HOME}/.claude",
+            "target": "/.host-claude",
+            "type": "bind"
+        }
+    ],
+    "postCreateCommand": "/usr/local/share/share-host-claude-config-init.sh",
+    "installsAfter": [
+        "ghcr.io/ckagerer/devcontainer-features/chezmoi"
+    ]
+}

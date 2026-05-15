@@ -1,0 +1,8 @@
+{
+    "test": {
+        "image": "ubuntu:jammy",
+        "features": {
+            "share-host-claude-config": {}
+        }
+    }
+}
