@@ -39,6 +39,10 @@ project-root/
 │   ├── persist-claude-mem/         # Feature: persists claude-mem knowledge base via named volume
 │   │   ├── devcontainer-feature.json
 │   │   └── install.sh
+│   ├── persist-nix-store/          # Feature: persists /nix/store across rebuilds via named volume
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
 │   ├── persist-pre-commit-cache/   # Feature: persists pre-commit cache across rebuilds
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
@@ -74,6 +78,11 @@ project-root/
 │   ├── persist-shell-history/
 │   │   ├── scenarios.json
 │   │   └── test.sh
+│   ├── persist-nix-store/
+│   │   ├── scenarios.json
+│   │   ├── test.sh
+│   │   ├── defer_scripts.sh
+│   │   └── non_root_user.sh
 │   ├── share-host-skillshare-config/
 │   │   ├── scenarios.json
 │   │   └── test.sh
@@ -209,6 +218,28 @@ Features read options from environment variables mapped to `devcontainer-feature
 **Platform-specific code**:
 - All installers must contain distro detection
 - If adding code for a new platform, place it inside `install.sh` and document preconditions in `README.md`
+
+### Devcontainer feature gotchas
+
+**`${featureOption:...}` is NOT supported in `mounts`:**
+
+The devcontainer CLI only interpolates `${localWorkspaceFolderBasename}` and `${devcontainerId}` inside `mounts` entries. Any `${featureOption:optionName}` literal is passed through unchanged — Docker then rejects it as an invalid volume/bind source. Hardcode the mount source or use a fixed convention (e.g., `devcontainer-nix-store`). Do not add options whose sole purpose is to parameterize a mount source.
+
+**Volume mounts are runtime-only:**
+
+Named volume and bind mounts declared in `devcontainer.json` (or via feature `mounts`) are attached only when the container *starts*, not during the Docker image build. Scripts in `install.sh` run at build time and cannot read from or write to named volumes. Use `postCreateCommand` (or the feature-generated post-create script) for anything that requires a volume to be present.
+
+To pre-seed volume permissions, `install.sh` can create the target directory with the correct ownership in the image layer. Docker copies the image directory into an empty named volume on first mount, so the volume inherits those permissions. On subsequent rebuilds the volume already has content and the image-layer copy is skipped.
+
+**Nix store caching pattern (`defer_scripts` + `persist-nix-store`):**
+
+Running `home-manager switch` at build time downloads packages on every rebuild (no volume cache available). The recommended pattern:
+
+1. Add the `persist-nix-store` feature — mounts a named volume (`devcontainer-nix-store`, shared across all projects) at `/nix/store`.
+2. Set `defer_scripts: true` on the `chezmoi` feature — adds `--exclude=scripts` to the build-time `chezmoi init`, then runs `chezmoi apply --include=scripts --exclude=encrypted` at post-create time when the volume is mounted.
+3. Result: first build installs Nix into the volume; subsequent rebuilds only fetch changed packages.
+
+Mount `/nix/store` only — not `/nix`. `/nix/var` (SQLite DB, profiles, GC roots) must stay per-container to prevent database corruption when multiple devcontainers share the volume concurrently.
 
 ### What to avoid
 
