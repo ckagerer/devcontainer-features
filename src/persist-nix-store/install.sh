@@ -14,7 +14,7 @@
 set -ex
 
 mkdir -p /nix/store
-chown "${_REMOTE_USER}:$(id -gn "${_REMOTE_USER}")" /nix/store
-chmod 755 /nix/store
+chown "${_REMOTE_USER}:$(id -gn "${_REMOTE_USER}")" /nix /nix/store
+chmod 755 /nix /nix/store
 
 echo "Done"

@@ -1,7 +1,7 @@
 {
     "name": "persist-nix-store",
     "id": "persist-nix-store",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Mounts a named volume at /nix to persist the Nix store across devcontainer rebuilds. Use together with the chezmoi feature (defer_scripts=true) to avoid re-downloading packages on every rebuild.",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-nix-store",
     "options": {},
