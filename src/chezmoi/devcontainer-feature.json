@@ -1,54 +1,59 @@
 {
-    "name": "chezmoi",
-    "id": "chezmoi",
-    "version": "1.8.0",
-    "description": "Install chezmoi",
-    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
-    "options": {
-        "dotfiles_repo": {
-            "type": "string",
-            "default": "twpayne/dotfiles",
-            "description": "The dotfiles repository to clone."
-        },
-        "chezmoi_branch": {
-            "type": "string",
-            "default": "",
-            "description": "The branch to use for chezmoi. Empty for default branch."
-        },
-        "atuin_user": {
-            "type": "string",
-            "default": "",
-            "description": "The user to use for Atuin. Leave empty if you don't want to use Atuin."
-        },
-        "atuin_password": {
-            "type": "string",
-            "default": "",
-            "description": "The token to use for Atuin. Leave empty if you don't want to use Atuin."
-        },
-        "atuin_key": {
-            "type": "string",
-            "default": "",
-            "description": "The key to use for Atuin. Leave empty if you don't want to use Atuin."
-        },
-        "keep_going": {
-            "type": "boolean",
-            "default": false,
-            "description": "Ignore errors during setup and continue execution."
-        },
-        "debug": {
-            "type": "boolean",
-            "default": false,
-            "description": "Write diagnostic info (env vars, chezmoi command) to /var/log/chezmoi-feature-debug.log before running chezmoi init."
-        },
-        "env_vars": {
-            "type": "string",
-            "default": "",
-            "description": "Semicolon-separated KEY=VALUE pairs to export as environment variables (e.g. MY_VAR=hello;OTHER=world)."
-        }
+  "name": "chezmoi",
+  "id": "chezmoi",
+  "version": "1.9.0",
+  "description": "Install chezmoi",
+  "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
+  "options": {
+    "dotfiles_repo": {
+      "type": "string",
+      "default": "twpayne/dotfiles",
+      "description": "The dotfiles repository to clone."
     },
-    "postCreateCommand": "/usr/local/share/chezmoi-atuin-init.sh",
-    "installsAfter": [
-        "ghcr.io/devcontainers/features/common-utils",
-        "ghcr.io/devcontainers/features/python"
-    ]
+    "chezmoi_branch": {
+      "type": "string",
+      "default": "",
+      "description": "The branch to use for chezmoi. Empty for default branch."
+    },
+    "atuin_user": {
+      "type": "string",
+      "default": "",
+      "description": "The user to use for Atuin. Leave empty if you don't want to use Atuin."
+    },
+    "atuin_password": {
+      "type": "string",
+      "default": "",
+      "description": "The token to use for Atuin. Leave empty if you don't want to use Atuin."
+    },
+    "atuin_key": {
+      "type": "string",
+      "default": "",
+      "description": "The key to use for Atuin. Leave empty if you don't want to use Atuin."
+    },
+    "keep_going": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ignore errors during setup and continue execution."
+    },
+    "debug": {
+      "type": "boolean",
+      "default": false,
+      "description": "Write diagnostic info (env vars, chezmoi command) to /var/log/chezmoi-feature-debug.log before running chezmoi init."
+    },
+    "env_vars": {
+      "type": "string",
+      "default": "",
+      "description": "Semicolon-separated KEY=VALUE pairs to export as environment variables (e.g. MY_VAR=hello;OTHER=world)."
+    },
+    "defer_scripts": {
+      "type": "boolean",
+      "default": false,
+      "description": "Skip chezmoi run_* scripts at build time and run them in postCreateCommand instead. Combine with the persist-nix-store feature so the Nix store persists across rebuilds. When false (default) behaviour is identical to the previous version."
+    }
+  },
+  "postCreateCommand": "/usr/local/share/chezmoi-post-create.sh",
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils",
+    "ghcr.io/devcontainers/features/python"
+  ]
 }

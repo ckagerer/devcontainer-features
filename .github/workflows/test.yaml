@@ -16,6 +16,7 @@ jobs:
         features:
           - chezmoi
           - clang
+          - persist-nix-store
           - persist-shell-history
           - persist-pre-commit-cache
           - persist-ccache-cache
@@ -57,6 +58,7 @@ jobs:
         features:
           - chezmoi
           - clang
+          - persist-nix-store
           - persist-shell-history
           - persist-pre-commit-cache
           - persist-ccache-cache

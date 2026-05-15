@@ -113,6 +113,9 @@ CHEZMOI_ARGS="init --apply --exclude=encrypted"
 if [ -n "${CHEZMOI_BRANCH}" ]; then
   CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch '${CHEZMOI_BRANCH}'"
 fi
+if [ "${DEFER_SCRIPTS:-false}" = "true" ]; then
+  CHEZMOI_ARGS="${CHEZMOI_ARGS} --exclude=scripts"
+fi
 CMD="chezmoi ${CHEZMOI_ARGS} '${DOTFILES_REPO}'"
 
 if [ "${DEBUG:-false}" = "true" ]; then
@@ -148,16 +151,17 @@ sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_EN
 
 [ -n "${CHEZMOI_ENV_TMP}" ] && rm -f "${CHEZMOI_ENV_TMP}"
 
-# Atuin login and sync
-# --- Generate a 'pull-git-lfs-artifacts.sh' script to be executed by the 'postCreateCommand' lifecycle hook
-INIT_ATUIN_SCRIPT_PATH="/usr/local/share/chezmoi-atuin-init.sh"
+# --- Generate a script to be executed by the 'postCreateCommand' lifecycle hook.
+# Runs deferred chezmoi scripts (when defer_scripts=true) and optional Atuin login/sync.
+POST_CREATE_SCRIPT_PATH="/usr/local/share/chezmoi-post-create.sh"
 
-tee "$INIT_ATUIN_SCRIPT_PATH" >/dev/null <<'EOF'
+tee "$POST_CREATE_SCRIPT_PATH" >/dev/null <<'EOF'
 #!/usr/bin/env bash
 # (C) Copyright 2025 Christian Kagerer
 # Purpose: Initialize Atuin login and sync for chezmoi devcontainer feature
 
 KEEP_GOING="__KEEP_GOING_PLACEHOLDER__"
+DEFER_SCRIPTS="__DEFER_SCRIPTS_PLACEHOLDER__"
 
 if [[ "${KEEP_GOING}" == "true" ]]; then
   set +o errexit +o nounset +o pipefail
@@ -165,6 +169,12 @@ else
   set -o errexit -o nounset -o pipefail
 fi
 set -x
+
+# Run deferred chezmoi scripts (Nix install, home-manager switch, …).
+# The /nix named volume is mounted at this point, so the Nix store persists.
+if [[ "${DEFER_SCRIPTS}" == "true" ]]; then
+  chezmoi apply --include=scripts --exclude=encrypted
+fi
 
 ATUIN_USER="__ATUIN_USER_PLACEHOLDER__"
 ATUIN_PASSWORD="__ATUIN_PASSWORD_PLACEHOLDER__"
@@ -200,18 +210,20 @@ fi
 EOF
 
 KEEP_GOING_ESCAPED="$(escape_sed_replacement "${KEEP_GOING:-false}")"
+DEFER_SCRIPTS_ESCAPED="$(escape_sed_replacement "${DEFER_SCRIPTS:-false}")"
 ATUIN_USER_ESCAPED="$(escape_sed_replacement "${ATUIN_USER:-}")"
 ATUIN_PASSWORD_ESCAPED="$(escape_sed_replacement "${ATUIN_PASSWORD:-}")"
 ATUIN_KEY_ESCAPED="$(escape_sed_replacement "${ATUIN_KEY:-}")"
 
 sed -i \
   -e "s|__KEEP_GOING_PLACEHOLDER__|${KEEP_GOING_ESCAPED}|g" \
+  -e "s|__DEFER_SCRIPTS_PLACEHOLDER__|${DEFER_SCRIPTS_ESCAPED}|g" \
   -e "s|__ATUIN_USER_PLACEHOLDER__|${ATUIN_USER_ESCAPED}|g" \
   -e "s|__ATUIN_PASSWORD_PLACEHOLDER__|${ATUIN_PASSWORD_ESCAPED}|g" \
   -e "s|__ATUIN_KEY_PLACEHOLDER__|${ATUIN_KEY_ESCAPED}|g" \
-  "$INIT_ATUIN_SCRIPT_PATH"
+  "$POST_CREATE_SCRIPT_PATH"
 
-chmod 755 "$INIT_ATUIN_SCRIPT_PATH"
+chmod 755 "$POST_CREATE_SCRIPT_PATH"
 
 apply_env_vars() {
   [ -z "${ENV_VARS:-}" ] && return 0

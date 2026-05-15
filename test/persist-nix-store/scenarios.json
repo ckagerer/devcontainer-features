@@ -1,0 +1,15 @@
+{
+    "non_root_user": {
+        "image": "ubuntu:jammy",
+        "features": {
+            "ghcr.io/devcontainers/features/common-utils:1": {
+                "installZsh": false,
+                "installOhMyZsh": false,
+                "upgradePackages": false,
+                "username": "octocat"
+            },
+            "persist-nix-store": {}
+        },
+        "remoteUser": "octocat"
+    }
+}
