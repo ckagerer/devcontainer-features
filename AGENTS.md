@@ -36,6 +36,9 @@ project-root/
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
 │   │   └── README.md
+│   ├── persist-claude-mem/         # Feature: persists claude-mem knowledge base via named volume
+│   │   ├── devcontainer-feature.json
+│   │   └── install.sh
 │   ├── persist-pre-commit-cache/   # Feature: persists pre-commit cache across rebuilds
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
@@ -60,6 +63,9 @@ project-root/
 │   │   ├── scenarios.json
 │   │   └── test.sh
 │   ├── persist-ccache-cache/
+│   │   ├── scenarios.json
+│   │   └── test.sh
+│   ├── persist-claude-mem/
 │   │   ├── scenarios.json
 │   │   └── test.sh
 │   ├── persist-pre-commit-cache/

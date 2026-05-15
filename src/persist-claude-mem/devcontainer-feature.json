@@ -1,0 +1,19 @@
+{
+    "id": "persist-claude-mem",
+    "version": "0.1.0",
+    "name": "Persist claude-mem knowledge base",
+    "description": "Mounts a named Docker volume at ~/.claude-mem so the claude-mem knowledge base persists across container rebuilds without conflicting with the host claude-mem process.",
+    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-claude-mem",
+    "options": {},
+    "mounts": [
+        {
+            "source": "devcontainer-${localWorkspaceFolderBasename}-persist-claude-mem-${devcontainerId}",
+            "target": "/.persist-claude-mem",
+            "type": "volume"
+        }
+    ],
+    "postCreateCommand": "/usr/local/share/persist-claude-mem-init.sh",
+    "installsAfter": [
+        "ghcr.io/ckagerer/devcontainer-features/chezmoi"
+    ]
+}

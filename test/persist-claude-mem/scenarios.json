@@ -1,0 +1,14 @@
+{
+    "test": {
+        "image": "ubuntu:jammy",
+        "features": {
+            "ghcr.io/devcontainers/features/common-utils:1": {
+                "installZsh": false,
+                "upgradePackages": false,
+                "username": "testuser"
+            },
+            "persist-claude-mem": {}
+        },
+        "remoteUser": "testuser"
+    }
+}
