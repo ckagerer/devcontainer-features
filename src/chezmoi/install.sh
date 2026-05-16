@@ -209,11 +209,9 @@ fi
 # The /nix named volume is mounted at this point, so the Nix store persists.
 if [[ "${DEFER_SCRIPTS}" == "true" ]]; then
   if [[ "${DEBUG}" == "true" ]]; then
-    {
-      printf '\n-- chezmoi apply --include=scripts --\n'
-      # shellcheck disable=SC2086
-      chezmoi apply --include=scripts ${EXTRA_ARGS} 2>&1
-    } >> "${CHEZMOI_POSTCREATE_LOG}"
+    printf '\n-- chezmoi apply --include=scripts --\n' >> "${CHEZMOI_POSTCREATE_LOG}"
+    # shellcheck disable=SC2086
+    chezmoi apply --include=scripts ${EXTRA_ARGS} 2>&1 | tee -a "${CHEZMOI_POSTCREATE_LOG}"
   else
     # shellcheck disable=SC2086
     chezmoi apply --include=scripts ${EXTRA_ARGS}
