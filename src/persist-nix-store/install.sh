@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # (C) Copyright 2025 Christian Kagerer
 # Purpose: Prepare /nix with correct ownership for the named volume mount.
 #
@@ -11,7 +11,7 @@
 # volume initialises with the right permissions for the Nix single-user
 # installer (--no-daemon) to write to the store at post-create time.
 
-set -ex
+set -o errexit -o nounset -o pipefail
 
 mkdir -p /nix/store
 chown "${_REMOTE_USER}:$(id -gn "${_REMOTE_USER}")" /nix /nix/store
