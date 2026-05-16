@@ -277,6 +277,11 @@ sed -i \
 
 chmod 755 "$POST_CREATE_SCRIPT_PATH"
 
+if [ "${DEBUG:-false}" = "true" ]; then
+  touch "/var/log/chezmoi-feature-1-postcreate.log"
+  chmod 666 "/var/log/chezmoi-feature-1-postcreate.log"
+fi
+
 apply_env_vars() {
   [ -z "${ENV_VARS:-}" ] && return 0
 
