@@ -43,6 +43,10 @@ project-root/
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
 │   │   └── README.md
+│   ├── persist-nix-var/            # Feature: persists /nix/var (Nix DB, profiles) per-project via named volume
+│   │   ├── devcontainer-feature.json
+│   │   ├── install.sh
+│   │   └── README.md
 │   ├── persist-pre-commit-cache/   # Feature: persists pre-commit cache across rebuilds
 │   │   ├── devcontainer-feature.json
 │   │   ├── install.sh
@@ -85,10 +89,12 @@ project-root/
 │   │   └── non_root_user.sh
 │   ├── share-host-skillshare-config/
 │   │   ├── scenarios.json
-│   │   └── test.sh
+│   │   ├── test.sh
+│   │   └── non_root_user.sh
 │   └── share-host-claude-config/
 │       ├── scenarios.json
-│       └── test.sh
+│       ├── test.sh
+│       └── non_root_user.sh
 ├── .devcontainer.json          # VS Code devcontainer config for local development
 ├── README.md                   # Project documentation
 ├── LICENSE                     # License file
@@ -110,10 +116,10 @@ project-root/
 
 ### Code style
 
-- **Shell variant**: Prefer POSIX `sh` compatibility; use `bash` for features requiring bash-specific constructs (arrays, etc.)
-- **Shebangs**: Use `#!/usr/bin/env sh` or `#!/usr/bin/env bash`; follow existing style in the feature folder
-- **Set options**: Use `set -e` (exit on error), `set -u` (fail on undefined vars), `set -o pipefail` (fail on pipe errors). Some features provide `KEEP_GOING` flags to skip strict failure behavior
-- **Logging**: Use `set -x` for debug traces in installers; keep output well-structured; use `echo` for user messages
+- **Shell variant**: All `install.sh` scripts use `#!/usr/bin/env bash`. Use `sh` only in embedded heredoc scripts that are strictly POSIX (no GNU-only tools). `stat -c`, arrays, and `pipefail` all require bash.
+- **Shebangs**: Use `#!/usr/bin/env bash` for all `install.sh` and post-create scripts
+- **Set options**: Use `set -o errexit -o nounset -o pipefail` at the top of every script. Never use `set -ex` (missing nounset; trace output is noisy and not a substitute for proper error handling)
+- **Logging**: Use `echo` for user-facing messages; avoid `set -x` in production scripts
 - **Idempotence**: Installers must be safe to run multiple times; check for existing commands before installing packages
 - **Indentation**: Maintain consistent indentation (2 or 4 spaces) and clear function separation
 
@@ -125,7 +131,7 @@ project-root/
   - `name`: Human-readable feature name
   - `id`: Unique identifier (usually kebab-case)
   - `version`: Semantic versioning (e.g., `1.6.1`)
-  - `description`: Brief description
+  - `description`: Brief description — must match actual behavior (e.g., exact mount target path). Shown in marketplace UI.
   - `documentationURL`: Link to feature documentation
   - Optional: `options`, `mounts`, `installsAfter`, `postCreateCommand`
 
@@ -191,6 +197,7 @@ Features read options from environment variables mapped to `devcontainer-feature
 - **Static analysis**: Use `shellcheck` for shell script validation
 - **Integration tests**: Use `bats` (Bash Automated Testing System) or custom shell test harness
 - **Test runners**: Provide `test/run.sh` wrapper if adding comprehensive tests
+- **Non-root scenario required**: Any feature that checks UIDs, ownership, or user identity must include a `non_root_user` scenario in `scenarios.json` (with `remoteUser: "octocat"` via `common-utils`) and a matching `non_root_user.sh` test script. Root is exempt from UID checks in most init scripts — tests that only run as root never exercise the UID assertion path.
 
 ## 7. Important Context
 
@@ -279,40 +286,30 @@ Mount `/nix/store` only — not `/nix`. `/nix/var` (SQLite DB, profiles, GC root
 
 ### Typical `install.sh` pattern
 
-```sh
-#!/usr/bin/env sh
+```bash
+#!/usr/bin/env bash
+# (C) Copyright 2026 Christian Kagerer
+# Purpose: <what this feature installs or configures>
 
-if [ "${KEEP_GOING:-false}" = "true" ]; then
-  set +e
-else
-  set -e
-fi
-set -x
-
-# Validate required environment variables
-if [ -z "${DOTFILES_REPO}" ]; then
-  echo "DOTFILES_REPO is not set"
-  exit 1
-fi
+set -o errexit -o nounset -o pipefail
 
 # Distribution detection
 if [ -f /etc/debian_version ]; then
-  apt update
-  apt install -y curl
+  apt-get update -y
+  apt-get install -y curl
 elif [ -f /etc/alpine-release ]; then
   apk add --no-cache curl
 else
-  echo "Unsupported distribution"
+  echo "Unsupported distribution" >&2
   exit 1
 fi
 
-# Check if already installed
+# Check if already installed (idempotence)
 if command -v chezmoi >/dev/null 2>&1; then
   echo "chezmoi already installed"
   exit 0
 fi
 
-# Install
 curl -fsSL https://get.chezmoi.io | sh
 ```
 
