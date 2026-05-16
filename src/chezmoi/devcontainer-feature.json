@@ -1,7 +1,7 @@
 {
   "name": "chezmoi",
   "id": "chezmoi",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Install chezmoi",
   "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
   "options": {
@@ -38,7 +38,7 @@
     "debug": {
       "type": "boolean",
       "default": false,
-      "description": "Write diagnostic info (env vars, chezmoi command) to /var/log/chezmoi-feature-debug.log before running chezmoi init."
+      "description": "Write diagnostic info to /var/log/chezmoi-feature-0-build.log (build phase) and /var/log/chezmoi-feature-1-postcreate.log (postCreate phase)."
     },
     "env_vars": {
       "type": "string",
