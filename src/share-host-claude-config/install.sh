@@ -1,8 +1,8 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # (C) Copyright 2026 Christian Kagerer
 # Purpose: Bind-mount host ~/.claude and selectively symlink safe subpaths into container $HOME/.claude
 
-set -eu
+set -o errexit -o nounset -o pipefail
 
 STAGE="/.host-claude"
 INIT_SCRIPT_PATH="/usr/local/share/share-host-claude-config-init.sh"
@@ -13,8 +13,9 @@ chmod 1777 "${STAGE}"
 
 # Emit the postCreateCommand init script
 tee "$INIT_SCRIPT_PATH" >/dev/null <<'EOF'
-#!/usr/bin/env sh
-set -eu
+#!/usr/bin/env bash
+# stat -c requires GNU coreutils (Linux only)
+set -o errexit -o nounset -o pipefail
 
 STAGE="/.host-claude"
 DEST="$HOME/.claude"
