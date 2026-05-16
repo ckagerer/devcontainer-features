@@ -116,12 +116,17 @@ fi
 if [ "${DEFER_SCRIPTS:-false}" = "true" ]; then
   CHEZMOI_ARGS="${CHEZMOI_ARGS} --exclude=scripts"
 fi
+if [ "${DEBUG:-false}" = "true" ]; then
+  CHEZMOI_ARGS="${CHEZMOI_ARGS} --verbose"
+fi
 CMD="chezmoi ${CHEZMOI_ARGS} '${DOTFILES_REPO}'"
 
 if [ "${DEBUG:-false}" = "true" ]; then
   CHEZMOI_DEBUG_LOG="/var/log/chezmoi-feature-debug.log"
   printf '=== chezmoi feature debug log: %s ===\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >"${CHEZMOI_DEBUG_LOG}"
   {
+    printf '\n-- chezmoi version --\n'
+    chezmoi --version 2>&1 || true
     printf '\n-- Feature options --\n'
     printf 'DOTFILES_REPO=%s\n' "${DOTFILES_REPO}"
     printf 'CHEZMOI_BRANCH=%s\n' "${CHEZMOI_BRANCH:-}"
@@ -141,7 +146,6 @@ if [ "${DEBUG:-false}" = "true" ]; then
   {
     printf '\n-- Full environment (installer process) --\n'
     env | sort
-    printf '\n=== end of debug log ===\n'
   } >>"${CHEZMOI_DEBUG_LOG}"
   chmod 640 "${CHEZMOI_DEBUG_LOG}"
   printf 'chezmoi debug log written to %s\n' "${CHEZMOI_DEBUG_LOG}"
@@ -150,6 +154,18 @@ fi
 sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}"
 
 [ -n "${CHEZMOI_ENV_TMP}" ] && rm -f "${CHEZMOI_ENV_TMP}"
+
+if [ "${DEBUG:-false}" = "true" ]; then
+  {
+    printf '\n-- Post-init: chezmoi status --\n'
+    sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && REMOTE_CONTAINERS=1 chezmoi status 2>&1" || true
+    printf '\n-- Post-init: chezmoi managed --\n'
+    sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && REMOTE_CONTAINERS=1 chezmoi managed 2>&1" || true
+    printf '\n-- Post-init: home directory --\n'
+    ls -la "${CHEZMOI_USER_HOME}" 2>&1 || true
+    printf '\n=== end of debug log ===\n'
+  } >>"${CHEZMOI_DEBUG_LOG}"
+fi
 
 # --- Generate a script to be executed by the 'postCreateCommand' lifecycle hook.
 # Runs deferred chezmoi scripts (when defer_scripts=true) and optional Atuin login/sync.
