@@ -1,7 +1,7 @@
 # Persist Nix store (persist-nix-store)
 
-Mounts a named Docker volume at `/nix/store` so the Nix package store survives container rebuilds
-without re-downloading packages.
+Mounts a shared named Docker volume at `/nix/store` so the Nix package store survives container
+rebuilds without re-downloading packages.
 
 ## Example Usage
 
@@ -11,8 +11,9 @@ without re-downloading packages.
 }
 ```
 
-Combine with the [chezmoi](../chezmoi/) feature and `defer_scripts: true` to skip Nix downloads on
-every rebuild:
+Combine with [persist-nix-var](../persist-nix-var/) so Nix also retains its database across
+rebuilds and recognises already-present store paths. Add the [chezmoi](../chezmoi/) feature with
+`defer_scripts: true` to run Nix installation at post-create time (when the volumes are mounted):
 
 ```json
 "features": {
@@ -20,7 +21,8 @@ every rebuild:
         "dotfiles_repo": "your-user/dotfiles",
         "defer_scripts": true
     },
-    "ghcr.io/ckagerer/devcontainer-features/persist-nix-store:1": {}
+    "ghcr.io/ckagerer/devcontainer-features/persist-nix-store:1": {},
+    "ghcr.io/ckagerer/devcontainer-features/persist-nix-var:1": {}
 }
 ```
 
@@ -28,10 +30,14 @@ every rebuild:
 
 The volume is mounted at `/nix/store` — not at `/nix`. This is intentional:
 
-- `/nix/store` is content-addressable and designed for concurrent read access. Multiple devcontainers
-  can share the same volume safely, even when open simultaneously.
-- `/nix/var` (the Nix SQLite database, profiles, and GC roots) stays inside each container's own
-  writable layer. Sharing it would cause database corruption under concurrent writes.
+- `/nix/store` is content-addressable and safe for concurrent reads. Multiple devcontainers
+  can share the same volume simultaneously without conflicts.
+- `/nix/var` (the Nix SQLite database, profiles, and GC roots) is handled separately by
+  [persist-nix-var](../persist-nix-var/), which uses a per-project volume to avoid SQLite
+  write contention between concurrent containers.
+
+Without `persist-nix-var`, Nix loses its database on every rebuild and re-downloads packages
+that are already present in the store.
 
 During build, `install.sh` pre-creates `/nix/store` with the remote user's ownership. Docker seeds
 an empty named volume from the image layer on first mount, so the directory is writable by the Nix

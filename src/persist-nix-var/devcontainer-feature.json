@@ -1,0 +1,19 @@
+{
+    "name": "persist-nix-var",
+    "id": "persist-nix-var",
+    "version": "1.0.0",
+    "description": "Mounts a per-project named volume at /nix/var to persist the Nix database, profiles, and GC roots across devcontainer rebuilds. Use together with persist-nix-store so the Nix daemon recognises already-downloaded store paths and skips redundant downloads.",
+    "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/persist-nix-var",
+    "options": {},
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils",
+        "ghcr.io/ckagerer/devcontainer-features/persist-nix-store"
+    ],
+    "mounts": [
+        {
+            "source": "devcontainer-${localWorkspaceFolderBasename}-persist-nix-var-${devcontainerId}",
+            "target": "/nix/var",
+            "type": "volume"
+        }
+    ]
+}
