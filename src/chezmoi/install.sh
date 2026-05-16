@@ -109,7 +109,10 @@ if [ -n "${ENV_VARS:-}" ]; then
 fi
 
 # run chezmoi
-CHEZMOI_ARGS="init --apply --exclude=encrypted"
+CHEZMOI_ARGS="init --apply"
+if [ -n "${EXTRA_ARGS:-}" ]; then
+  CHEZMOI_ARGS="${CHEZMOI_ARGS} ${EXTRA_ARGS}"
+fi
 if [ -n "${CHEZMOI_BRANCH}" ]; then
   CHEZMOI_ARGS="${CHEZMOI_ARGS} --branch '${CHEZMOI_BRANCH}'"
 fi
@@ -133,6 +136,7 @@ if [ "${DEBUG:-false}" = "true" ]; then
     printf 'CHEZMOI_USER=%s\n' "${CHEZMOI_USER}"
     printf 'CHEZMOI_USER_HOME=%s\n' "${CHEZMOI_USER_HOME}"
     printf 'ENV_VARS=%s\n' "${ENV_VARS:-}"
+    printf 'EXTRA_ARGS=%s\n' "${EXTRA_ARGS:-}"
     printf 'KEEP_GOING=%s\n' "${KEEP_GOING:-false}"
     printf '\n-- Resolved chezmoi command --\n'
     printf '%s\n' "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}"
@@ -178,6 +182,7 @@ tee "$POST_CREATE_SCRIPT_PATH" >/dev/null <<'EOF'
 
 KEEP_GOING="__KEEP_GOING_PLACEHOLDER__"
 DEFER_SCRIPTS="__DEFER_SCRIPTS_PLACEHOLDER__"
+EXTRA_ARGS="__EXTRA_ARGS_PLACEHOLDER__"
 
 if [[ "${KEEP_GOING}" == "true" ]]; then
   set +o errexit +o nounset +o pipefail
@@ -189,7 +194,8 @@ set -x
 # Run deferred chezmoi scripts (Nix install, home-manager switch, …).
 # The /nix named volume is mounted at this point, so the Nix store persists.
 if [[ "${DEFER_SCRIPTS}" == "true" ]]; then
-  chezmoi apply --include=scripts --exclude=encrypted
+  # shellcheck disable=SC2086
+  chezmoi apply --include=scripts ${EXTRA_ARGS}
 fi
 
 ATUIN_USER="__ATUIN_USER_PLACEHOLDER__"
@@ -227,6 +233,7 @@ EOF
 
 KEEP_GOING_ESCAPED="$(escape_sed_replacement "${KEEP_GOING:-false}")"
 DEFER_SCRIPTS_ESCAPED="$(escape_sed_replacement "${DEFER_SCRIPTS:-false}")"
+EXTRA_ARGS_ESCAPED="$(escape_sed_replacement "${EXTRA_ARGS:-}")"
 ATUIN_USER_ESCAPED="$(escape_sed_replacement "${ATUIN_USER:-}")"
 ATUIN_PASSWORD_ESCAPED="$(escape_sed_replacement "${ATUIN_PASSWORD:-}")"
 ATUIN_KEY_ESCAPED="$(escape_sed_replacement "${ATUIN_KEY:-}")"
@@ -234,6 +241,7 @@ ATUIN_KEY_ESCAPED="$(escape_sed_replacement "${ATUIN_KEY:-}")"
 sed -i \
   -e "s|__KEEP_GOING_PLACEHOLDER__|${KEEP_GOING_ESCAPED}|g" \
   -e "s|__DEFER_SCRIPTS_PLACEHOLDER__|${DEFER_SCRIPTS_ESCAPED}|g" \
+  -e "s|__EXTRA_ARGS_PLACEHOLDER__|${EXTRA_ARGS_ESCAPED}|g" \
   -e "s|__ATUIN_USER_PLACEHOLDER__|${ATUIN_USER_ESCAPED}|g" \
   -e "s|__ATUIN_PASSWORD_PLACEHOLDER__|${ATUIN_PASSWORD_ESCAPED}|g" \
   -e "s|__ATUIN_KEY_PLACEHOLDER__|${ATUIN_KEY_ESCAPED}|g" \

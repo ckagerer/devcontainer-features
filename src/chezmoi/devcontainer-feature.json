@@ -1,7 +1,7 @@
 {
   "name": "chezmoi",
   "id": "chezmoi",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Install chezmoi",
   "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/chezmoi",
   "options": {
@@ -49,6 +49,11 @@
       "type": "boolean",
       "default": false,
       "description": "Skip chezmoi run_* scripts at build time and run them in postCreateCommand instead. Combine with the persist-nix-store feature so the Nix store persists across rebuilds. When false (default) behaviour is identical to the previous version."
+    },
+    "extra_args": {
+      "type": "string",
+      "default": "--exclude=encrypted",
+      "description": "Extra flags appended to chezmoi apply at build time and in postCreateCommand. Defaults to '--exclude=encrypted'. Set to empty string to apply encrypted files (provide the decryption key via env_vars)."
     }
   },
   "postCreateCommand": "/usr/local/share/chezmoi-post-create.sh",
