@@ -10,6 +10,7 @@
 set -o errexit -o nounset -o pipefail
 
 mkdir -p /nix/var
+# chown /nix itself handles the standalone case (persist-nix-store may not be present)
 chown "${_REMOTE_USER}:$(id -gn "${_REMOTE_USER}")" /nix /nix/var
 chmod 755 /nix /nix/var
 
