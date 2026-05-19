@@ -155,9 +155,19 @@ if [ "${DEBUG:-false}" = "true" ]; then
   printf 'chezmoi debug log written to %s\n' "${CHEZMOI_DEBUG_LOG}"
 fi
 
-sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}"
+CHEZMOI_APPLY_START="$(date +%s)"
+CHEZMOI_APPLY_RC=0
+sudo --user "${CHEZMOI_USER}" bash -c "cd '${CHEZMOI_USER_HOME}' && ${CHEZMOI_ENV_SOURCE}REMOTE_CONTAINERS=1 ${CMD}" || CHEZMOI_APPLY_RC=$?
+CHEZMOI_APPLY_ELAPSED=$(($(date +%s) - CHEZMOI_APPLY_START))
 
 [ -n "${CHEZMOI_ENV_TMP}" ] && rm -f "${CHEZMOI_ENV_TMP}"
+
+if [ "${CHEZMOI_APPLY_RC}" -eq 0 ]; then
+  printf '[chezmoi] init --apply: SUCCESS (elapsed=%ds)\n' "${CHEZMOI_APPLY_ELAPSED}"
+else
+  printf '[chezmoi] init --apply: FAILED exit=%d (elapsed=%ds)\n' "${CHEZMOI_APPLY_RC}" "${CHEZMOI_APPLY_ELAPSED}" >&2
+  [ "${KEEP_GOING:-false}" != "true" ] && exit "${CHEZMOI_APPLY_RC}"
+fi
 
 if [ "${DEBUG:-false}" = "true" ]; then
   {
@@ -208,13 +218,22 @@ fi
 # Run deferred chezmoi scripts (Nix install, home-manager switch, …).
 # The /nix named volume is mounted at this point, so the Nix store persists.
 if [[ "${DEFER_SCRIPTS}" == "true" ]]; then
+  CHEZMOI_SCRIPTS_START="$(date +%s)"
+  CHEZMOI_SCRIPTS_RC=0
   if [[ "${DEBUG}" == "true" ]]; then
-    printf '\n-- chezmoi apply --include=scripts --\n' >> "${CHEZMOI_POSTCREATE_LOG}"
+    printf '\n-- chezmoi apply --include=scripts --\n' >>"${CHEZMOI_POSTCREATE_LOG}"
     # shellcheck disable=SC2086
-    chezmoi apply --include=scripts ${EXTRA_ARGS} 2>&1 | tee -a "${CHEZMOI_POSTCREATE_LOG}"
+    chezmoi apply --include=scripts ${EXTRA_ARGS} 2>&1 | tee -a "${CHEZMOI_POSTCREATE_LOG}" || CHEZMOI_SCRIPTS_RC=$?
   else
     # shellcheck disable=SC2086
-    chezmoi apply --include=scripts ${EXTRA_ARGS}
+    chezmoi apply --include=scripts ${EXTRA_ARGS} || CHEZMOI_SCRIPTS_RC=$?
+  fi
+  CHEZMOI_SCRIPTS_ELAPSED=$(( $(date +%s) - CHEZMOI_SCRIPTS_START ))
+  if [[ "${CHEZMOI_SCRIPTS_RC}" -eq 0 ]]; then
+    printf '[chezmoi] apply --include=scripts: SUCCESS (elapsed=%ds)\n' "${CHEZMOI_SCRIPTS_ELAPSED}"
+  else
+    printf '[chezmoi] apply --include=scripts: FAILED exit=%d (elapsed=%ds)\n' "${CHEZMOI_SCRIPTS_RC}" "${CHEZMOI_SCRIPTS_ELAPSED}" >&2
+    [[ "${KEEP_GOING}" != "true" ]] && exit "${CHEZMOI_SCRIPTS_RC}"
   fi
 fi
 
