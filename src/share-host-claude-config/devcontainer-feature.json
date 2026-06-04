@@ -1,6 +1,6 @@
 {
     "id": "share-host-claude-config",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "name": "Share host Claude Code config",
     "description": "Bind-mounts the host ~/.claude into the devcontainer and selectively symlinks safe subpaths (agents, commands, skills, hooks, rules, plugins, ...) into $HOME/.claude so user config persists across rebuilds. MCP/settings.json excluded by default.",
     "documentationURL": "https://github.com/ckagerer/devcontainer-features/tree/main/src/share-host-claude-config",
@@ -22,13 +22,13 @@
         },
         "link_skills": {
             "type": "boolean",
-            "default": true,
-            "description": "Symlink skills/ from host staging mount."
+            "default": false,
+            "description": "Symlink skills/ from host staging mount. Opt in if your skills are self-contained markdown with no host-path references."
         },
         "link_hooks": {
             "type": "boolean",
-            "default": true,
-            "description": "Symlink hooks/ from host staging mount."
+            "default": false,
+            "description": "Symlink hooks/ from host staging mount. Opt in only if all binaries referenced by hooks (e.g. rtk, ghx) are available inside the container."
         },
         "link_rules": {
             "type": "boolean",
@@ -37,8 +37,8 @@
         },
         "link_plugins": {
             "type": "boolean",
-            "default": true,
-            "description": "Symlink plugins/ from host staging mount. Assumes x86_64 Linux host and container; set false for cross-arch containers."
+            "default": false,
+            "description": "Symlink plugins/ from host staging mount. Opt in only if host and container share the same arch and all plugin binaries/paths are valid inside the container."
         },
         "link_sessions": {
             "type": "boolean",
