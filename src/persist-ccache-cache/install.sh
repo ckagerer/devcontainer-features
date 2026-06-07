@@ -73,20 +73,6 @@ fi
 export CCACHE_DIR=~/.cache/ccache
 export CCACHE_MAXSIZE="${CCACHE_MAXSIZE}"
 
-# Optionally add to shell RC files if they exist
-for rc_file in ~/.bashrc ~/.zshrc; do
-  if [ -f "$rc_file" ]; then
-    if ! grep -q "CCACHE_DIR" "$rc_file"; then
-      {
-        echo ""
-        echo "# ccache configuration"
-        echo "export CCACHE_DIR=~/.cache/ccache"
-        echo "export CCACHE_MAXSIZE='${CCACHE_MAXSIZE}'"
-      } >> "$rc_file"
-    fi
-  fi
-done
-
 echo "ccache persistence initialization complete"
 echo "  Cache directory: ~/.cache/ccache (symlink to /.persist-ccache)"
 echo "  Max cache size: $CCACHE_MAXSIZE"
@@ -96,5 +82,25 @@ EOF
 sed -i "s|__CCACHE_MAXSIZE_PLACEHOLDER__|${CCACHE_MAXSIZE:-5G}|g" "$INIT_SCRIPT_PATH"
 
 chmod 755 "$INIT_SCRIPT_PATH"
+
+# Write env vars to system-wide shell config so they work regardless of how the
+# user's shell is managed (e.g. Home Manager manages ~/.zshrc as a read-only Nix store path)
+if [ -f /etc/bash.bashrc ] && ! grep -q "# persist-ccache-cache" /etc/bash.bashrc; then
+  {
+    printf '\n# persist-ccache-cache\n'
+    # shellcheck disable=SC2016
+    printf 'export CCACHE_DIR="${HOME}/.cache/ccache"\n'
+    printf 'export CCACHE_MAXSIZE='"'"'%s'"'"'\n' "${CCACHE_MAXSIZE:-5G}"
+  } >>/etc/bash.bashrc
+fi
+
+if [ -d /etc/zsh ] && ! grep -q "# persist-ccache-cache" /etc/zsh/zshenv 2>/dev/null; then
+  {
+    printf '\n# persist-ccache-cache\n'
+    # shellcheck disable=SC2016
+    printf 'export CCACHE_DIR="${HOME}/.cache/ccache"\n'
+    printf 'export CCACHE_MAXSIZE='"'"'%s'"'"'\n' "${CCACHE_MAXSIZE:-5G}"
+  } >>/etc/zsh/zshenv
+fi
 
 echo "ccache persistence feature installation complete"

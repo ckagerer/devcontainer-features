@@ -43,21 +43,13 @@ touch /.persist-ccache/test-file.txt || {
 }
 rm /.persist-ccache/test-file.txt
 
-# Check if environment variables are set (if shell rc files have been sourced)
+# Check env vars in system-wide shell config (written by install.sh as root)
 echo "Checking environment variable configuration..."
-if [ -f ~/.bashrc ] || [ -f ~/.zshrc ]; then
-  # The init script should have added CCACHE_DIR and CCACHE_MAXSIZE
-  # to the shell rc files
-  for rc_file in ~/.bashrc ~/.zshrc; do
-    if [ -f "$rc_file" ]; then
-      if grep -q "CCACHE_DIR" "$rc_file"; then
-        echo "✓ CCACHE_DIR found in $rc_file"
-      fi
-      if grep -q "CCACHE_MAXSIZE" "$rc_file"; then
-        echo "✓ CCACHE_MAXSIZE found in $rc_file"
-      fi
-    fi
-  done
-fi
+for rc_file in /etc/bash.bashrc /etc/zsh/zshenv; do
+  if [ -f "$rc_file" ]; then
+    grep -q "CCACHE_DIR" "$rc_file" && echo "✓ CCACHE_DIR found in $rc_file" || echo "✗ CCACHE_DIR missing from $rc_file"
+    grep -q "CCACHE_MAXSIZE" "$rc_file" && echo "✓ CCACHE_MAXSIZE found in $rc_file" || echo "✗ CCACHE_MAXSIZE missing from $rc_file"
+  fi
+done
 
 echo "=== All tests passed ==="
