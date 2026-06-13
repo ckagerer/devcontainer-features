@@ -16,10 +16,14 @@ jobs:
         features:
           - chezmoi
           - clang
-          - persist-nix-store
-          - persist-shell-history
-          - persist-pre-commit-cache
           - persist-ccache-cache
+          - persist-claude-mem
+          - persist-nix-store
+          - persist-nix-var
+          - persist-pre-commit-cache
+          - persist-shell-history
+          - share-host-claude-config
+          - share-host-skillshare-config
         baseImage:
           - alpine:3.21
           - alpine:latest
@@ -58,10 +62,14 @@ jobs:
         features:
           - chezmoi
           - clang
-          - persist-nix-store
-          - persist-shell-history
-          - persist-pre-commit-cache
           - persist-ccache-cache
+          - persist-claude-mem
+          - persist-nix-store
+          - persist-nix-var
+          - persist-pre-commit-cache
+          - persist-shell-history
+          - share-host-claude-config
+          - share-host-skillshare-config
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
