@@ -1,6 +1,7 @@
 {
     "non_root_user": {
         "image": "ubuntu:jammy",
+        "updateRemoteUserUID": false,
         "features": {
             "ghcr.io/devcontainers/features/common-utils:1": {
                 "installZsh": false,
